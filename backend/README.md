@@ -6,7 +6,7 @@ Crypto.com Chain Multi-sig backend demo in Actix-Web
 
 From the root directory of this project:
 ```bash
-bash db/setup_db.sh
+bash ./db/setup_db.sh
 ```
 
 This creates a sqlite database, multi-sig.db, in the root.
