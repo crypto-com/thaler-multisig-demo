@@ -1,0 +1,17 @@
+[package]
+name = "multi_sig_backend"
+version = "0.1.0"
+authors = ["Carson Yan <carson.yan@cryprto.com>"]
+edition = "2018"
+workspace = ".."
+
+[dependencies]
+actix-web = "1.0.0"
+env_logger = "0.5"
+failure = "0.1.1"
+futures = "0.1"
+r2d2 = "0.8.2"
+r2d2_sqlite = "0.8.0"
+rusqlite = "0.16"
+serde = "1.0"
+listenfd = "0.3"
