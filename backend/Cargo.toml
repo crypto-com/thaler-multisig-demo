@@ -14,3 +14,5 @@ r2d2_sqlite = "0.8.0"
 rusqlite = "0.16"
 serde = "1.0"
 listenfd = "0.3"
+diesel = { version = "1.0.0", features = ["sqlite"] }
+dotenv = "0.9.0"

@@ -3,116 +3,89 @@ use crate::PartiallySignedTxn;
 use actix_web::{web, Error as AWError};
 use failure::Error;
 use futures::Future;
-use r2d2;
-use r2d2_sqlite;
-use rusqlite::NO_PARAMS;
-pub type Pool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
-pub type Connection = r2d2::PooledConnection<r2d2_sqlite::SqliteConnectionManager>;
+
+use diesel;
+use diesel::prelude::*;
+use backend::*;
 
 pub fn execute_get_partially_signed_transactions(
-    pool: &Pool,
 ) -> impl Future<Item = Vec<PartiallySignedTxn>, Error = AWError> {
-    let pool = pool.clone();
-    web::block(move || get_partially_signed_transactions(pool.get()?))
+    web::block(move || get_partially_signed_transactions())
     .from_err()
 }
 pub fn execute_get_multi_sig_utxos(
-    pool: &Pool,
 ) -> impl Future<Item = Vec<MultiSigUtxo>, Error = AWError> {
-    let pool = pool.clone();
-    web::block(move || get_multi_sig_utxos(pool.get()?))
+    web::block(move || get_multi_sig_utxos())
     .from_err()
 }
 pub fn execute_register_partially_signed_transaction(
-    pool: &Pool,
     params: web::Query<PartiallySignedTxn>,
 ) -> impl Future<Item = bool, Error = AWError> {
-    let pool = pool.clone();
-    web::block(move || register_partially_signed_transaction(pool.get()?, params))
+    web::block(move || register_partially_signed_transaction(params))
     .from_err()
 }
 pub fn execute_register_multi_sig_utxo(
-    pool: &Pool,
     params: web::Query<MultiSigUtxo>,
 ) -> impl Future<Item = bool, Error = AWError> {
-    let pool = pool.clone();
-    web::block(move || register_multi_sig_utxo(pool.get()?, params))
+    web::block(move || register_multi_sig_utxo(params))
     .from_err()
 }
 fn get_partially_signed_transactions(
-    conn: Connection,
 ) -> Result<Vec<PartiallySignedTxn>, Error> {
 
-    let stmt = "SELECT ORDER_ID, TX_ID, OUTPUT_ID,HASH, DATE
-    FROM partially_signed_transaction;";
-
-    let mut prep_stmt = conn.prepare(stmt)?;
-
-    let txns = prep_stmt
-        .query_map(NO_PARAMS, |row| PartiallySignedTxn {
-            order_id: row.get(0),
-            tx_id: row.get(1),
-            output_id: row.get(2),
-            hash: row.get(3),
-            date: row.get(4),
-        })
-        .and_then(|mapped_rows| {
-            Ok(mapped_rows
-                .map(|row| row.unwrap())
-                .collect::<Vec<PartiallySignedTxn>>())
-        })?;
-
-    Ok(txns)
+use backend::schema::partially_signed_transaction::dsl::*;
+    let connection = establish_connection();
+    let results = partially_signed_transaction
+        .load::<PartiallySignedTxn>(&connection)
+        .expect("Error loading posts");
+    Ok(results)
 }
 fn register_partially_signed_transaction(
-    conn: Connection,
     params: web::Query<PartiallySignedTxn>,
 ) -> Result<bool, Error> {
 
-    conn.execute(
-        "INSERT INTO partially_signed_transaction (ORDER_ID, TX_ID, OUTPUT_ID,HASH, DATE)
-                  VALUES (?1, ?2, ?3, ?4, ?5)",
-        &[&params.order_id.to_string(), &params.tx_id.to_string(), &params.output_id.to_string(),&params.hash.to_string(),&params.date.to_string()],
-    )
-    .unwrap();
+use backend::schema::partially_signed_transaction;
+    let connection = establish_connection();
+
+    let partially_signed_transaction = PartiallySignedTxn { 
+        order_id:params.order_id.to_string(), 
+        tx_id: params.tx_id.to_string(), 
+        output_id:params.output_id,
+        hash:params.hash.to_string(), 
+        date:params.date.to_string()
+     };
+
+    diesel::insert_into(partially_signed_transaction::table)
+        .values(&partially_signed_transaction)
+        .execute(&connection)
+        .expect("Error saving new post");
     Ok(true)
 }
-fn get_multi_sig_utxos(conn: Connection) -> Result<Vec<MultiSigUtxo>, Error> {
-    let stmt = "SELECT ORDER_ID, TX_ID, OUTPUT_ID, DATE
-    FROM multi_sig_utxo;";
+fn get_multi_sig_utxos() -> Result<Vec<MultiSigUtxo>, Error> {
 
-    let mut prep_stmt = conn.prepare(stmt)?;
-
-    let utxos = prep_stmt
-        .query_map(NO_PARAMS, |row| MultiSigUtxo {
-            order_id: row.get(0),
-            tx_id: row.get(1),
-            output_id: row.get(2),
-            date: row.get(3),
-        })
-        .and_then(|mapped_rows| {
-            Ok(mapped_rows
-                .map(|row| row.unwrap())
-                .collect::<Vec<MultiSigUtxo>>())
-        })?;
-
-    Ok(utxos)
+    use backend::schema::multi_sig_utxo::dsl::*;
+    let connection = establish_connection();
+    let results = multi_sig_utxo
+        .load::<MultiSigUtxo>(&connection)
+        .expect("Error loading posts");
+    Ok(results)
 }
 fn register_multi_sig_utxo(
-    conn: Connection,
     params: web::Query<MultiSigUtxo>,
 ) -> Result<bool, Error> {
+    use backend::schema::multi_sig_utxo;
+    let connection = establish_connection();
+    let multi_sig_utxo = MultiSigUtxo { 
+        order_id:params.order_id.to_string(), 
+        tx_id: params.tx_id.to_string(), 
+        output_id:params.output_id,
+        date:params.date.to_string()
+     };
 
-    conn.execute(
-        "INSERT INTO multi_sig_utxo (ORDER_ID, TX_ID, OUTPUT_ID, DATE)
-                  VALUES (?1, ?2, ?3, ?4)",
-        &[
-            &params.order_id.to_string(),
-            &params.tx_id.to_string(),
-            &params.output_id.to_string(),
-            &params.date.to_string(),
-        ],
-    )
-    .unwrap();
+    diesel::insert_into(multi_sig_utxo::table)
+        .values(&multi_sig_utxo)
+        .execute(&connection)
+        .expect("Error saving new post");
     Ok(true)
+
 }
