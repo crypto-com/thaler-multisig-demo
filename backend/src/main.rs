@@ -10,33 +10,40 @@ mod db;
 use listenfd::ListenFd;
 use backend::models::*;
 
+use diesel::prelude::*;
+use diesel::r2d2::{self, ConnectionManager};
+type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 
 fn get_partially_signed_txns(
+    pool: web::Data<Pool>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    db::execute_get_partially_signed_transactions()
+    db::execute_get_partially_signed_transactions(pool)
         .from_err()
         .and_then(|res| Ok(HttpResponse::Ok().json(res)))
 }
 
 fn register_partially_signed_txn(
+    pool: web::Data<Pool>,
     params: web::Query<PartiallySignedTxn>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    db::execute_register_partially_signed_transaction(params)
+    db::execute_register_partially_signed_transaction(pool, params)
         .from_err()
         .and_then(|res| Ok(HttpResponse::Ok().json(res)))
 }
 
 fn get_multi_sig_utxos(
+    pool: web::Data<Pool>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    db::execute_get_multi_sig_utxos()
+    db::execute_get_multi_sig_utxos(pool)
         .from_err()
         .and_then(|res| Ok(HttpResponse::Ok().json(res)))
 }
 
 fn register_multi_sig_utxo(
+    pool: web::Data<Pool>,
     params: web::Query<MultiSigUtxo>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    db::execute_register_multi_sig_utxo( params)
+    db::execute_register_multi_sig_utxo(pool, params)
         .from_err()
         .and_then(|res| Ok(HttpResponse::Ok().json(res)))
 }
@@ -55,9 +62,16 @@ fn main() {
     let mut listenfd = ListenFd::from_env();
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
+    dotenv::dotenv().ok();
+    let connspec = std::env::var("DATABASE_URL").expect("DATABASE_URL");
+    let manager = ConnectionManager::<SqliteConnection>::new(connspec);
+    let pool = r2d2::Pool::builder()
+        .build(manager)
+        .expect("Failed to create pool.");
     let mut server = HttpServer::new(move || {
 
         App::new()
+            .data(pool.clone())
             .wrap(middleware::Logger::default())
             .wrap(
                 Cors::new()
