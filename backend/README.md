@@ -2,14 +2,6 @@ Crypto.com Chain Multi-sig backend demo in Actix-Web
 
 ## Usage
 
-### init database sqlite
-
-From the root directory of this project:
-```bash
-bash ./db/setup_db.sh
-```
-
-This creates a sqlite database, multi-sig.db, in the root.
 
 
 ### server
@@ -17,6 +9,7 @@ This creates a sqlite database, multi-sig.db, in the root.
 ```bash
 # if ubuntu : sudo apt-get install libsqlite3-dev
 # if fedora : sudo dnf install libsqlite3x-devel
+diesel setup
 cargo run (or ``cargo watch -x run``)
 # Started http server: 127.0.0.1:8080
 ```
