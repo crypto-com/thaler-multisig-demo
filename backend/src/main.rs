@@ -3,7 +3,8 @@
 */
 
 use actix_web::Error;
-use actix_web::{middleware, web, App, Error as AWError, HttpResponse, HttpServer};
+use actix_cors::Cors;
+use actix_web::{http::header,middleware, web, App, Error as AWError, HttpResponse, HttpServer};
 use futures::future::Future;
 use r2d2_sqlite;
 use r2d2_sqlite::SqliteConnectionManager;
@@ -86,6 +87,13 @@ fn main() {
         App::new()
             .data(pool.clone())
             .wrap(middleware::Logger::default())
+            .wrap(
+                Cors::new()
+                    .allowed_methods(vec!["GET", "POST"])
+                    .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+                    .allowed_header(header::CONTENT_TYPE)
+                    .max_age(3600),
+            )
             .service(
                 web::resource("/transaction/partially-signed")
                     .route(web::get().to_async(get_partially_signed_txns))
