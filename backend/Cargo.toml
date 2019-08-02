@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 actix-web = "1.0.0"
+actix-cors = "0.1.0"
 env_logger = "0.5"
 failure = "0.1.1"
 futures = "0.1"
