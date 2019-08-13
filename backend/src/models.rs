@@ -16,3 +16,22 @@ pub struct Keys {
     pub pub_key: String,
     pub view_key: String,
 }
+#[derive(Deserialize)]
+pub struct AfterPaid{
+    pub tx_id: String,
+    pub commitment: String,
+}
+#[derive(Serialize)]
+pub struct AfterShipped {
+    pub commitment: String,
+    pub nonce: String,
+}
+#[derive(Deserialize)]
+pub struct AfterReceived{
+    pub signed_txn: String,
+    pub nonce: String,
+}
+#[derive(Serialize)]
+pub struct BroadcastedTxn {
+    pub tx_id: String,
+}

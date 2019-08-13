@@ -19,8 +19,8 @@ fn generate_wallet(
     pool: web::Data<Pool>,
     params: web::Query<Order>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    // generate wallet from client
-    // get pubkeyM, viewkeyM and session_idM from client
+    // generate wallet
+    // get pubkeyM, viewkeyM and session_idM
     let session_id = "session_id";
     let pub_key = "pub_key";
     let view_key = "view_key";
@@ -31,26 +31,26 @@ fn generate_wallet(
 }
 fn verify_txid_and_add_commiement(
         pool: web::Data<Pool>,
-    params: web::Query<Order>,
+    params: web::Query<AfterPaid>,
 ) -> Result<HttpResponse, AWError>{
-    // txid and commitmentB
-    // add commitmentB to session_idM in client
-    // generate commitmentM and nonceM from client
+    // verify txid
+    // add commitmentB to sessionM
+    // generate commitmentM and nonceM
     // return commitmentM and nonceM
-
-    Ok(HttpResponse::Ok().json(true))
+    let afterShipped:AfterShipped = AfterShipped{ commitment:"commitment".to_string(), nonce:"nonce".to_string()};
+    Ok(HttpResponse::Ok().json(afterShipped))
 }
 fn update_signed_txn_and_nonce(
         pool: web::Data<Pool>,
-    params: web::Query<Order>,
+    params: web::Query<AfterReceived>,
 ) -> Result<HttpResponse, AWError>{
-    // result B and nonceB
-    // ask client to add nonceB to client
-    // ask client to sign seesionM
-    // ask client to add resultB
+    // signedTxnB and nonceB
+    // add nonceB to sessionM
+    // sign sessionM
+    // add signTxnB to seesionM
     // broadcast txn
-    // return txid
-    Ok(HttpResponse::Ok().json(true))
+    let broadcastedTxn:BroadcastedTxn = BroadcastedTxn{tx_id:"tx_id".to_string()};
+    Ok(HttpResponse::Ok().json(broadcastedTxn))
 }
 fn main() {
     let mut listenfd = ListenFd::from_env();
