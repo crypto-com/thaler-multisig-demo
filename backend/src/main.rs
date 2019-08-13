@@ -75,18 +75,18 @@ fn main() {
                     .max_age(3600),
             )
             .service(
-                web::resource("/keys")
+                web::resource("/generate-keys")
                     .route(web::post().to_async(generate_wallet)),
                     // return pubkey and view key
             )
             .service(
-                web::resource("/commitment-and-nonce/order-id/{orderId}/txId/{txId}/commitment/{commitment}")
-                    .route(web::get().to_async(verify_txid_and_add_commiement)),
+                web::resource("/submit-commitment-and-nonce")
+                    .route(web::post().to_async(verify_txid_and_add_commiement)),
                     // return commitment and nonce
             )
             .service(
-                web::resource("/partially-signed-transaction/{signedTransaction}/order-id/{orderId}/nonce/{nonce}/")
-                    .route(web::get().to_async(update_signed_txn_and_nonce)),
+                web::resource("/submit-signed-txn-and-nounce")
+                    .route(web::post().to_async(update_signed_txn_and_nonce)),
             )
     });
     server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {

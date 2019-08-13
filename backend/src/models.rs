@@ -18,6 +18,7 @@ pub struct Keys {
 }
 #[derive(Deserialize)]
 pub struct AfterPaid{
+    pub order_id: String,
     pub tx_id: String,
     pub commitment: String,
 }
@@ -28,6 +29,7 @@ pub struct AfterShipped {
 }
 #[derive(Deserialize)]
 pub struct AfterReceived{
+    pub order_id: String,
     pub signed_txn: String,
     pub nonce: String,
 }
