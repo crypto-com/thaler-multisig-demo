@@ -2,7 +2,6 @@
    Crypto.com Chain Multi-sig backend demo in Actix-Web
 */
 
-// use actix_web::Error;
 use actix_cors::Cors;
 use actix_web::{http::header,middleware, web, App, Error as AWError, HttpResponse, HttpServer};
 use futures::future::Future;
@@ -77,12 +76,10 @@ fn main() {
             .service(
                 web::resource("/generate-keys")
                     .route(web::post().to_async(generate_wallet)),
-                    // return pubkey and view key
             )
             .service(
                 web::resource("/submit-commitment-and-nonce")
                     .route(web::post().to_async(verify_txid_and_add_commiement)),
-                    // return commitment and nonce
             )
             .service(
                 web::resource("/submit-signed-txn-and-nounce")
