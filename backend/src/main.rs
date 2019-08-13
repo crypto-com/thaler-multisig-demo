@@ -46,8 +46,8 @@ fn update_signed_txn_and_nonce(
 ) -> Result<HttpResponse, AWError>{
     // signedTxnB and nonceB
     // add nonceB to sessionM
-    // sign sessionM
     // add signTxnB to seesionM
+    // sign sessionM
     // broadcast txn
     let broadcastedTxn:BroadcastedTxn = BroadcastedTxn{tx_id:"tx_id".to_string()};
     Ok(HttpResponse::Ok().json(broadcastedTxn))
