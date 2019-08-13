@@ -1,2 +1,1 @@
-DROP TABLE multi_sig_utxo;
-DROP TABLE partially_signed_transaction;
+DROP TABLE order_and_session_mapping;
