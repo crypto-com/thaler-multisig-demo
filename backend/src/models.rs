@@ -1,15 +1,23 @@
-use crate::schema::order_and_session_mapping;
+use crate::schema::order_details;
 use serde::{Deserialize, Serialize}; 
 
 #[derive(Serialize, Deserialize, Queryable, Insertable)]
-#[table_name="order_and_session_mapping"]
-pub struct OrderAndSessionMapping {
+#[table_name="order_details"]
+pub struct OrderDetails {
     pub order_id: String,
+    pub buyer_public_key: String,
+    pub buyer_view_key: String,
+    pub escrow_public_key: String,
+    pub escrow_view_key: String,
     pub session_id: String,
 }
 #[derive(Deserialize)]
 pub struct Order {
     pub order_id: String,
+    pub buyer_public_key: String,
+    pub buyer_view_key: String,
+    pub escrow_public_key: String,
+    pub escrow_view_key: String,
 }
 #[derive(Serialize)]
 pub struct Keys {

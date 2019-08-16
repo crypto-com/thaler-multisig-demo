@@ -13,18 +13,27 @@ use diesel::prelude::*;
 use diesel::r2d2::{self, ConnectionManager};
 type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 
-
+use client_common::storage::MemoryStorage;
+use client_core::wallet::DefaultWalletClient;
+use client_core::wallet::WalletClient;
+use secstr::SecUtf8;
 fn generate_wallet(
     pool: web::Data<Pool>,
     params: web::Query<Order>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    // generate wallet
-    // get pubkeyM, viewkeyM and session_idM
-    let session_id = "session_id";
-    let pub_key = "pub_key";
-    let view_key = "view_key";
-    let keys:Keys = Keys{pub_key:pub_key.to_string(),view_key:view_key.to_string()};
-    db::execute_register_order(pool, params, session_id.to_string())
+
+    let storage = MemoryStorage::default();
+    let wallet = DefaultWalletClient::builder()
+    .with_wallet(storage.clone())
+    .build()
+    .unwrap();
+    let passphrase = &SecUtf8::from("passphrase");
+    let name = params.order_id.to_string();
+    wallet.new_wallet(&name, passphrase).unwrap();
+    let public_key = wallet.new_public_key(&name, passphrase).unwrap();
+    let view_key = wallet.view_key(&name, passphrase).unwrap();
+    let keys:Keys = Keys{pub_key:public_key.to_string(),view_key:view_key.to_string()};
+    db::execute_register_order(pool, params)
         .from_err()
         .and_then(|res| Ok(HttpResponse::Ok().json(keys)))
 }
@@ -33,6 +42,7 @@ fn verify_txid_and_add_commiement(
     params: web::Query<AfterPaid>,
 ) -> Result<HttpResponse, AWError>{
     // verify txid
+    // create sessionM
     // add commitmentB to sessionM
     // generate commitmentM and nonceM
     // return commitmentM and nonceM

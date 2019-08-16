@@ -19,9 +19,13 @@
 -- INSERT INTO partially_signed_transaction VALUES
 --     ('2', '0x2', '0','AS4DFG56SE4G564SD6V4SD56F4G6AS4F6AS45F456ASDF456ADS4F56ADS456FADS56F4ADS6F46ADSF456ADS456F4ADS56F46ASD4F6ASD456FADS56F4ADS56F56SD456F4','1971-07-13');
 
-CREATE TABLE order_and_session_mapping(
+CREATE TABLE order_details(
   order_id TEXT PRIMARY KEY NOT NULL,
-  session_id TEXT NOT NULL
+  buyer_public_key TEXT NOT NULL,
+  buyer_view_key TEXT NOT NULL,
+  escrow_public_key TEXT NOT NULL,
+  escrow_view_key TEXT NOT NULL,
+  session_id TEXT
 );
-INSERT INTO order_and_session_mapping VALUES
-    ('1', '1');
+INSERT INTO order_details VALUES
+    ('1', '1','1','1','1','1');

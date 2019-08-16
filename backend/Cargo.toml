@@ -7,9 +7,14 @@ edition = "2018"
 [dependencies]
 actix-web = "1.0.0"
 actix-cors = "0.1.0"
+chain-core = { path = "./chain/chain-core" }
+client-core = { path = "./chain/client-core" }
+client-common = { path = "./chain/client-common" }
+client-index = { path = "./chain/client-index" }
 env_logger = "0.5"
 failure = "0.1.1"
 futures = "0.1"
+secstr = "0.3.2"
 r2d2 = "0.8.2"
 r2d2_sqlite = "0.8.0"
 rusqlite = "0.16"
