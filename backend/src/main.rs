@@ -13,25 +13,32 @@ use diesel::prelude::*;
 use diesel::r2d2::{self, ConnectionManager};
 type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 
-use client_common::storage::MemoryStorage;
+use client_common::storage::SledStorage;
 use client_core::wallet::DefaultWalletClient;
 use client_core::wallet::WalletClient;
 use secstr::SecUtf8;
+use client_common::PublicKey;
+use std::str::FromStr;
+
+use std::str;
+use client_core::wallet::MultiSigWalletClient;
+
+use chain_core::tx::data::{Tx};
+use chain_core::tx::{TransactionId};
 fn generate_wallet(
     pool: web::Data<Pool>,
     params: web::Query<Order>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-
-    let storage = MemoryStorage::default();
+    let storage = SledStorage::new(".client-storage").unwrap();
     let wallet = DefaultWalletClient::builder()
     .with_wallet(storage.clone())
     .build()
     .unwrap();
-    let passphrase = &SecUtf8::from("passphrase");
+    let passphrase = SecUtf8::from("passphrase");
     let name = params.order_id.to_string();
-    wallet.new_wallet(&name, passphrase).unwrap();
-    let public_key = wallet.new_public_key(&name, passphrase).unwrap();
-    let view_key = wallet.view_key(&name, passphrase).unwrap();
+    wallet.new_wallet(&name, &passphrase).unwrap();
+    let public_key = wallet.new_public_key(&name, &passphrase).unwrap();
+    let view_key = wallet.view_key(&name, &passphrase).unwrap();
     let keys:Keys = Keys{pub_key:public_key.to_string(),view_key:view_key.to_string()};
     db::execute_register_order(pool, params)
         .from_err()
@@ -40,14 +47,44 @@ fn generate_wallet(
 fn verify_txid_and_add_commiement(
         pool: web::Data<Pool>,
     params: web::Query<AfterPaid>,
-) -> Result<HttpResponse, AWError>{
-    // verify txid
-    // create sessionM
-    // add commitmentB to sessionM
-    // generate commitmentM and nonceM
-    // return commitmentM and nonceM
-    let afterShipped:AfterShipped = AfterShipped{ commitment:"commitment".to_string(), nonce:"nonce".to_string()};
-    Ok(HttpResponse::Ok().json(afterShipped))
+) -> impl Future<Item = HttpResponse, Error = AWError>{
+
+    let buyer_commitment_vec = hex::decode(params.commitment.to_string()).unwrap();
+    let mut buyer_commitment = [0; 32];
+    buyer_commitment.copy_from_slice(&buyer_commitment_vec);
+
+    let storage = SledStorage::new(".client-storage").unwrap();
+
+    let wallet = DefaultWalletClient::builder()
+    .with_wallet(storage.clone())
+    .build()
+    .unwrap();
+    let passphrase = SecUtf8::from("passphrase");
+    let name = params.order_id.to_string();
+    let merchant_public_key = wallet.new_public_key(&name, &passphrase).unwrap();
+    db::execute_get_order_details(pool, params.order_id.to_string())
+        .from_err()
+        .and_then(move |res| {
+            let buyer_public_key = PublicKey::from_str(&res.buyer_public_key.to_string()).unwrap();
+            let transaction = Tx::new();
+            let session_id = wallet
+                .new_multi_sig_session(
+                    &name,
+                    &passphrase,
+                    transaction.id(),
+                    vec![merchant_public_key.clone(), buyer_public_key.clone()],
+                    merchant_public_key.clone(),
+                )
+                .unwrap();
+            // println!("{}",hex::encode(session_id));
+            // update db
+            wallet.add_nonce_commitment(&session_id, &passphrase, buyer_commitment, &buyer_public_key);
+            let merchant_nonce_commitment = wallet.nonce_commitment(&session_id, &passphrase).unwrap();
+            let merchant_nonce = wallet.nonce(&session_id, &passphrase).unwrap();
+            let afterShipped:AfterShipped = AfterShipped{ commitment:hex::encode(merchant_nonce_commitment), nonce:merchant_nonce.to_string()};
+            Ok(HttpResponse::Ok().json(afterShipped))
+            })
+    
 }
 fn update_signed_txn_and_nonce(
         pool: web::Data<Pool>,

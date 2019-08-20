@@ -17,6 +17,21 @@ pub fn execute_register_order(
     web::block(move || register_order(pool, params))
     .from_err()
 }
+pub fn execute_get_order_details(
+    pool: web::Data<Pool>,
+    order_id: String,
+) -> impl Future<Item = OrderDetails, Error = AWError> {
+    web::block(move || get_order_details(pool, order_id))
+    .from_err()
+}
+pub fn execute_store_session_id(
+    pool: web::Data<Pool>,
+    order_id: String,
+    session_id: String,
+) -> impl Future<Item = bool, Error = AWError> {
+    web::block(move || store_session_id(pool, order_id, session_id))
+    .from_err()
+}
 fn register_order(
     pool: web::Data<Pool>,
     params: web::Query<Order>,
@@ -36,4 +51,29 @@ fn register_order(
         .execute(conn)
         .expect("Error saving new post");
     Ok(true)
+}
+
+fn store_session_id(
+    pool: web::Data<Pool>,
+    order_id: String,
+    session_id: String,
+) -> Result<bool, Error> {
+    use backend::schema::order_details::dsl::*;
+    let conn: &SqliteConnection = &pool.get().unwrap();
+    diesel::update(order_details.filter(order_id.eq(&order_id)))
+        .set(session_id.eq(&session_id))
+        .execute(conn);
+    Ok(true)
+}
+
+fn get_order_details(
+    pool: web::Data<Pool>,
+    order_id_1: String,
+) -> Result<OrderDetails, Error> {
+    use backend::schema::order_details::dsl::*;
+    let conn: &SqliteConnection = &pool.get().unwrap();
+    let result = order_details.filter(order_id.eq(&order_id_1))
+    .first::<OrderDetails>(conn)
+    .expect("Error loading posts");
+    Ok(result)
 }

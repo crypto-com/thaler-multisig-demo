@@ -5,6 +5,6 @@ table! {
         buyer_view_key -> Text,
         escrow_public_key -> Text,
         escrow_view_key -> Text,
-        session_id -> Nullable<Text>,
+        session_id -> Text,
     }
 }

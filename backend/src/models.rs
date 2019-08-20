@@ -1,7 +1,7 @@
 use crate::schema::order_details;
 use serde::{Deserialize, Serialize}; 
 
-#[derive(Serialize, Deserialize, Queryable, Insertable)]
+#[derive(Debug,Serialize, Deserialize, Queryable, Insertable)]
 #[table_name="order_details"]
 pub struct OrderDetails {
     pub order_id: String,

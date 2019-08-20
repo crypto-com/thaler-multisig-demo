@@ -1,1 +1,1 @@
-DROP TABLE order_and_session_mapping;
+DROP TABLE order_details;
