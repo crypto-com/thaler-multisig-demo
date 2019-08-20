@@ -1,8 +1,8 @@
 use crate::schema::order_details;
-use serde::{Deserialize, Serialize}; 
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug,Serialize, Deserialize, Queryable, Insertable)]
-#[table_name="order_details"]
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
+#[table_name = "order_details"]
 pub struct OrderDetails {
     pub order_id: String,
     pub buyer_public_key: String,
@@ -25,7 +25,7 @@ pub struct Keys {
     pub view_key: String,
 }
 #[derive(Deserialize)]
-pub struct AfterPaid{
+pub struct AfterPaid {
     pub order_id: String,
     pub tx_id: String,
     pub commitment: String,
@@ -36,7 +36,7 @@ pub struct AfterShipped {
     pub nonce: String,
 }
 #[derive(Deserialize)]
-pub struct AfterReceived{
+pub struct AfterReceived {
     pub order_id: String,
     pub signed_txn: String,
     pub nonce: String,
