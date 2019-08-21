@@ -40,7 +40,7 @@ fn generate_wallet(
     let public_key = wallet.new_public_key(&name, &passphrase).unwrap();
     let view_key = wallet.view_key(&name, &passphrase).unwrap();
     let keys: Keys = Keys {
-        pub_key: public_key.to_string(),
+        public_key: public_key.to_string(),
         view_key: view_key.to_string(),
     };
     db::execute_register_order(pool, params)

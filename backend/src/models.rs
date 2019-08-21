@@ -21,7 +21,7 @@ pub struct Order {
 }
 #[derive(Serialize)]
 pub struct Keys {
-    pub pub_key: String,
+    pub public_key: String,
     pub view_key: String,
 }
 #[derive(Deserialize)]
