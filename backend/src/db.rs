@@ -49,13 +49,13 @@ fn register_order(pool: web::Data<Pool>, params: web::Query<Order>) -> Result<bo
 
 fn store_session_id(
     pool: web::Data<Pool>,
-    order_id: String,
-    session_id: String,
+    order_id_1: String,
+    session_id_1: String,
 ) -> Result<bool, Error> {
     use backend::schema::order_details::dsl::*;
     let conn: &SqliteConnection = &pool.get().unwrap();
-    diesel::update(order_details.filter(order_id.eq(&order_id)))
-        .set(session_id.eq(&session_id))
+    diesel::update(order_details.filter(order_id.eq(&order_id_1)))
+        .set(session_id.eq(&session_id_1))
         .execute(conn);
     Ok(true)
 }

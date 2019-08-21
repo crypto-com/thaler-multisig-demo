@@ -1,3 +1,4 @@
 target
 backend/Cargo.lock
 *.db
+backend/.client-storage/*

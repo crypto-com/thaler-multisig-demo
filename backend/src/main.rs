@@ -64,7 +64,7 @@ fn verify_txid_and_add_commiement(
     let passphrase = SecUtf8::from("passphrase");
     let name = params.order_id.to_string();
     let merchant_public_key = wallet.new_public_key(&name, &passphrase).unwrap();
-    db::execute_get_order_details(pool, params.order_id.to_string())
+    db::execute_get_order_details(pool.clone(), name.clone())
         .from_err()
         .and_then(move |res| {
             let buyer_public_key = PublicKey::from_str(&res.buyer_public_key.to_string()).unwrap();
@@ -91,13 +91,13 @@ fn verify_txid_and_add_commiement(
                 commitment: hex::encode(merchant_nonce_commitment),
                 nonce: merchant_nonce.to_string(),
             };
-            // db::execute_store_session_id(
-            //     pool,
-            //     params.order_id.to_string(),
-            //     hex::encode(&session_id),
-            // )
-            // .and_then(|res2| Ok(()));
-            Ok(HttpResponse::Ok().json(afterShipped))
+            db::execute_store_session_id(
+                pool,
+                params.order_id.to_string(),
+                hex::encode(&session_id),
+            )
+            .from_err()
+            .and_then(|res| Ok(HttpResponse::Ok().json(afterShipped)))
         })
 }
 fn update_signed_txn_and_nonce(
