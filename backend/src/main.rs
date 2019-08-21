@@ -100,19 +100,43 @@ fn verify_txid_and_add_commiement(
             .and_then(|res| Ok(HttpResponse::Ok().json(afterShipped)))
         })
 }
-fn update_signed_txn_and_nonce(
+fn add_partial_signature_and_nonce(
     pool: web::Data<Pool>,
     params: web::Query<AfterReceived>,
-) -> Result<HttpResponse, AWError> {
-    // signedTxnB and nonceB
-    // add nonceB to sessionM
-    // add signTxnB to seesionM
-    // sign sessionM
-    // broadcast txn
-    let broadcastedTxn: BroadcastedTxn = BroadcastedTxn {
-        tx_id: "tx_id".to_string(),
-    };
-    Ok(HttpResponse::Ok().json(broadcastedTxn))
+) -> impl Future<Item = HttpResponse, Error = AWError> {
+    let storage = SledStorage::new(".client-storage").unwrap();
+
+    let wallet = DefaultWalletClient::builder()
+        .with_wallet(storage.clone())
+        .build()
+        .unwrap();
+    let passphrase = SecUtf8::from("passphrase");
+    let name = params.order_id.to_string();
+    let buyer_partial_signature_vec = hex::decode(params.partial_signature.to_string()).unwrap();
+    let mut buyer_partial_signature = [0; 32];
+    buyer_partial_signature.copy_from_slice(&buyer_partial_signature_vec);
+    let buyer_nonce = PublicKey::from_str(&params.nonce.to_string()).unwrap();
+    db::execute_get_order_details(pool.clone(), name.clone())
+        .from_err()
+        .and_then(move |res| {
+            let session_id_vec = hex::decode(res.session_id.to_string()).unwrap();
+            let mut session_id = [0; 32];
+            session_id.copy_from_slice(&session_id_vec);
+            let buyer_public_key = PublicKey::from_str(&res.buyer_public_key.to_string()).unwrap();
+
+            wallet.add_nonce(&session_id, &passphrase, &buyer_nonce, &buyer_public_key);
+            wallet.add_partial_signature(
+                &session_id,
+                &passphrase,
+                buyer_partial_signature,
+                &buyer_public_key,
+            );
+            wallet.signature(&session_id, &passphrase).unwrap();
+            let broadcastedTxn: BroadcastedTxn = BroadcastedTxn {
+                tx_id: "tx_id".to_string(),
+            };
+            Ok(HttpResponse::Ok().json(broadcastedTxn))
+        })
 }
 fn main() {
     let mut listenfd = ListenFd::from_env();
@@ -141,8 +165,8 @@ fn main() {
                     .route(web::post().to_async(verify_txid_and_add_commiement)),
             )
             .service(
-                web::resource("/submit-signed-txn-and-nounce")
-                    .route(web::post().to_async(update_signed_txn_and_nonce)),
+                web::resource("/submit-partial-signature_and_nonce-and-nounce")
+                    .route(web::post().to_async(add_partial_signature_and_nonce)),
             )
     });
     server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {

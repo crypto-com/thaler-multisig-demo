@@ -38,7 +38,7 @@ pub struct AfterShipped {
 #[derive(Deserialize)]
 pub struct AfterReceived {
     pub order_id: String,
-    pub signed_txn: String,
+    pub partial_signature: String,
     pub nonce: String,
 }
 #[derive(Serialize)]
