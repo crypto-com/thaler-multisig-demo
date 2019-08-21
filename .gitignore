@@ -1,4 +1,4 @@
-target
-backend/Cargo.lock
-*.db
+/backend/target
+/backend/Cargo.lock
+/backend/*.db
 /backend/.client-storage
