@@ -165,7 +165,7 @@ fn main() {
                     .route(web::post().to_async(verify_txid_and_add_commiement)),
             )
             .service(
-                web::resource("/submit-partial-signature_and_nonce-and-nounce")
+                web::resource("/submit-partial-signature_and_nonce")
                     .route(web::post().to_async(add_partial_signature_and_nonce)),
             )
     });
