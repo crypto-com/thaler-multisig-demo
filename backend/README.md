@@ -20,12 +20,6 @@ rm -rf .client-storage && diesel migration redo
 
 systemfd --no-pid -s http::8080 -- cargo watch -x run
 
-### web client
-
-[http://127.0.0.1:8080/multi-sig-utxo](http://127.0.0.1:8080/multi-sig-utxo)
-
-[http://127.0.0.1:8080/transaction/partially-signed](http://127.0.0.1:8080/transaction/partially-signed)
-
 ### sqlite client
 
 ```bash
