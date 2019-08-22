@@ -105,7 +105,7 @@ paths:
                 $ref: "#/components/schemas/CommitmentAndNonce"
           x-responseId: SuccessfulOperation
           x-uppercaseResponseId: SUCCESSFUL_OPERATION
-  /submit-partial-signature_and_nonce:
+  /submit-partial-signature-and-nonce:
     post:
       tags:
         - All
