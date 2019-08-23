@@ -7,6 +7,7 @@ Crypto.com Chain Multi-sig backend demo in Actix-Web
 ```bash
 # if ubuntu : sudo apt-get install libsqlite3-dev
 # if fedora : sudo dnf install libsqlite3x-devel
+cargo install diesel_cli --no-default-features --features sqlite
 diesel setup
 cargo run (or ``cargo watch -x run``)
 # Started http server: 127.0.0.1:8080

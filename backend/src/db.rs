@@ -39,6 +39,8 @@ fn register_order(pool: web::Data<Pool>, params: web::Query<Order>) -> Result<bo
         escrow_public_key: params.escrow_public_key.to_string(),
         escrow_view_key: params.escrow_view_key.to_string(),
         session_id: "".to_string(),
+        payment_transaction_id: "".to_string(),
+        settlement_transaction_id: "".to_string(),
     };
     diesel::insert_into(order_details::table)
         .values(&order_details)
@@ -61,6 +63,16 @@ fn store_session_id(
 }
 
 fn get_order_details(pool: web::Data<Pool>, order_id_1: String) -> Result<OrderDetails, Error> {
+    use backend::schema::order_details::dsl::*;
+    let conn: &SqliteConnection = &pool.get().unwrap();
+    let result = order_details
+        .filter(order_id.eq(&order_id_1))
+        .first::<OrderDetails>(conn)
+        .expect("Error loading posts");
+    Ok(result)
+}
+
+fn get_pending_order_details(pool: web::Data<Pool>) -> Result<OrderDetails, Error> {
     use backend::schema::order_details::dsl::*;
     let conn: &SqliteConnection = &pool.get().unwrap();
     let result = order_details

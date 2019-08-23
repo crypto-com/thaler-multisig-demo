@@ -5,11 +5,21 @@ use serde::{Deserialize, Serialize};
 #[table_name = "order_details"]
 pub struct OrderDetails {
     pub order_id: String,
+    pub status: 
     pub buyer_public_key: String,
     pub buyer_view_key: String,
     pub escrow_public_key: String,
     pub escrow_view_key: String,
     pub session_id: String,
+    pub payment_transaction_id: String,
+    pub settlement_transaction_id: String,
+}
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
+pub enum OrderStatus {
+    registered,
+    pending,
+    settled,
+    refunded,
 }
 #[derive(Deserialize)]
 pub struct Order {
