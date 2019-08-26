@@ -1,13 +1,14 @@
-use crate::Order;
-use crate::OrderDetails;
 use actix_web::{web, Error as AWError};
 use failure::Error;
 use futures::Future;
-
 use diesel;
 use diesel::prelude::*;
-
 use diesel::r2d2::{self, ConnectionManager};
+
+use crate::Order;
+use crate::OrderDetails;
+use crate::OrderStatus;
+
 type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 
 pub fn execute_register_order(
@@ -34,6 +35,7 @@ fn register_order(pool: web::Data<Pool>, params: web::Query<Order>) -> Result<bo
     let conn: &SqliteConnection = &pool.get().unwrap();
     let order_details = OrderDetails {
         order_id: params.order_id.to_string(),
+        status: OrderStatus::PendingPayment,
         buyer_public_key: params.buyer_public_key.to_string(),
         buyer_view_key: params.buyer_view_key.to_string(),
         escrow_public_key: params.escrow_public_key.to_string(),

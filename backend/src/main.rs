@@ -21,7 +21,6 @@ use secstr::SecUtf8;
 use std::str::FromStr;
 
 use client_core::wallet::MultiSigWalletClient;
-use std::str;
 
 use chain_core::tx::data::Tx;
 use chain_core::tx::TransactionId;
@@ -47,7 +46,7 @@ fn generate_wallet(
         .from_err()
         .and_then(|res| Ok(HttpResponse::Ok().json(keys)))
 }
-fn verify_txid_and_add_commiement(
+fn verify_txid_and_add_commitment(
     pool: web::Data<Pool>,
     params: web::Query<AfterPaid>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
@@ -134,16 +133,16 @@ fn main() {
             .service(web::resource("/generate-keys").route(web::post().to_async(generate_wallet)))
             .service(
                 web::resource("/submit-commitment-and-nonce")
-                    .route(web::post().to_async(verify_txid_and_add_commiement)),
+                    .route(web::post().to_async(verify_txid_and_add_commitment)),
             )
             .service(
                 web::resource("/submit-partial-signature-and-nonce")
                     .route(web::post().to_async(add_partial_signature_and_nonce)),
             )
-            .service(
-                web::resource("/order/pending")
-                    .route(web::post().to_async(get_pending_orders)),
-            )
+            // .service(
+            //     web::resource("/order/pending")
+            //         .route(web::post().to_async(get_pending_orders)),
+            // )
     });
     server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
         server.listen(l).unwrap()
