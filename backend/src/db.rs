@@ -74,12 +74,12 @@ fn get_order_details(pool: web::Data<Pool>, order_id_1: String) -> Result<OrderD
     Ok(result)
 }
 
-fn get_pending_order_details(pool: web::Data<Pool>) -> Result<OrderDetails, Error> {
-    use backend::schema::order_details::dsl::*;
-    let conn: &SqliteConnection = &pool.get().unwrap();
-    let result = order_details
-        .filter(order_id.eq(&order_id_1))
-        .first::<OrderDetails>(conn)
-        .expect("Error loading posts");
-    Ok(result)
-}
+// fn get_pending_order_details(pool: web::Data<Pool>) -> Result<OrderDetails, Error> {
+//     use backend::schema::order_details::dsl::*;
+//     let conn: &SqliteConnection = &pool.get().unwrap();
+//     let result = order_details
+//         .filter(order_id.eq(&order_id_1))
+//         .first::<OrderDetails>(conn)
+//         .expect("Error loading posts");
+//     Ok(result)
+// }

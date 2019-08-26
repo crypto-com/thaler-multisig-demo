@@ -21,7 +21,7 @@ pub struct OrderDetails {
     pub settlement_transaction_id: String,
 }
 #[derive(Debug, Serialize, Deserialize, AsExpression, FromSqlRow)]
-#[sql_type = "SmallInt"]
+#[sql_type = "Text"]
 pub enum OrderStatus {
     PendingPayment,
     Paid,
@@ -29,36 +29,36 @@ pub enum OrderStatus {
     Refunding,
     Settled,
 }
-impl<DB: Backend> ToSql<SmallInt, DB> for OrderStatus
+impl<DB: Backend> ToSql<Text, DB> for OrderStatus
 where
-    i16: ToSql<SmallInt, DB>,
+    String: ToSql<Text, DB>,
 {
     fn to_sql<W>(&self, out: &mut Output<W, DB>) -> serialize::Result
     where
         W: io::Write,
     {
         let v = match *self {
-            OrderStatus::PendingPayment => 1,
-            OrderStatus::Paid => 2,
-            OrderStatus::Delivering => 3,
-            OrderStatus::Refunding => 4,
-            OrderStatus::Settled => 5,
+            OrderStatus::PendingPayment => String::from("PendingPayment"),
+            OrderStatus::Paid => String::from("Paid"),
+            OrderStatus::Delivering => String::from("Delivering"),
+            OrderStatus::Refunding => String::from("Refunding"),
+            OrderStatus::Settled => String::from("Settled"),
         };
         v.to_sql(out)
     }
 }
-impl<DB: Backend> FromSql<SmallInt, DB> for OrderStatus
+impl<DB: Backend> FromSql<Text, DB> for OrderStatus
 where
-    i16: FromSql<SmallInt, DB>,
+    String: FromSql<Text, DB>,
 {
     fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
-        let v = i16::from_sql(bytes)?;
-        Ok(match v {
-            1 => OrderStatus::PendingPayment,
-            2 => OrderStatus::Paid,
-            3 => OrderStatus::Delivering,
-            4 => OrderStatus::Refunding,
-            5 => OrderStatus::Settled,
+        let v = String::from_sql(bytes)?;
+        Ok(match &v[..] {
+            "PendingPayment" => OrderStatus::PendingPayment,
+            "Paid" => OrderStatus::Paid,
+            "Delivering" => OrderStatus::Delivering,
+            "Refunding" => OrderStatus::Refunding,
+            "Settled" => OrderStatus::Settled,
             _ => return Err("Unsupported order status".into()),
         })
     }
