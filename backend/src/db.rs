@@ -56,7 +56,7 @@ fn register_order(pool: web::Data<Pool>, params: web::Query<NewOrderRequest>) ->
     let conn: &SqliteConnection = &pool.get().unwrap();
     let order_details = OrderDetails {
         order_id: params.order_id.to_string(),
-        price: params.price.to_string(),
+        amount: params.amount.to_string(),
         status: OrderStatus::PendingPayment,
         buyer_public_key: params.buyer_public_key.to_string(),
         buyer_view_key: params.buyer_view_key.to_string(),

@@ -12,7 +12,7 @@ use crate::schema::order_details;
 pub struct OrderDetails {
     pub order_id: String,
     pub status: OrderStatus,
-    pub price: String,
+    pub amount: String,
     pub buyer_public_key: String,
     pub buyer_view_key: String,
     pub buyer_address: String,
@@ -29,7 +29,7 @@ pub enum OrderStatus {
     PendingResponse,
     Delivering,
     Refunding,
-    Paid,
+    Completed,
     Refunded,
 }
 impl<DB: Backend> ToSql<Text, DB> for OrderStatus
@@ -45,7 +45,7 @@ where
             OrderStatus::PendingResponse => String::from("PendingResponse"),
             OrderStatus::Delivering => String::from("Delivering"),
             OrderStatus::Refunding => String::from("Refunding"),
-            OrderStatus::Paid => String::from("Paid"),
+            OrderStatus::Completed => String::from("Completed"),
             OrderStatus::Refunded => String::from("Refunded"),
         };
         v.to_sql(out)
@@ -62,7 +62,7 @@ where
             "PendingResponse" => OrderStatus::PendingResponse,
             "Delivering" => OrderStatus::Delivering,
             "Refunding" => OrderStatus::Refunding,
-            "Paid" => OrderStatus::Paid,
+            "Completed" => OrderStatus::Completed,
             "Refunded" => OrderStatus::Refunded,
             _ => return Err("Unsupported order status".into()),
         })
@@ -71,7 +71,7 @@ where
 #[derive(Deserialize)]
 pub struct NewOrderRequest {
     pub order_id: String,
-    pub price: String,
+    pub amount: String,
     pub buyer_public_key: String,
     pub buyer_view_key: String,
     pub buyer_address: String,
@@ -99,7 +99,7 @@ pub struct OrderUpdatedResponse {
 #[derive(Serialize)]
 pub struct OrderResponse {
     pub order_id: String,
-    pub price: String,
+    pub amount: String,
     pub status: OrderStatus,
     pub buyer_public_key: String,
     pub buyer_view_key: String,

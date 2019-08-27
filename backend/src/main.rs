@@ -126,7 +126,7 @@ fn get_order(
             let res = OrderResponse {
                 order_id: order_id.to_owned(),
                 status: record.status,
-                price: record.price,
+                amount: record.amount,
                 buyer_public_key: record.buyer_public_key,
                 buyer_view_key: record.buyer_view_key,
                 buyer_address: record.buyer_address,
@@ -212,7 +212,7 @@ fn exchange_commitment(
                 OrderStatus::Delivering => vec![
                     TxOut {
                         address: merchant_address,
-                        value: Coin::from_str(&record.price[..]).unwrap(),
+                        value: Coin::from_str(&record.amount[..]).unwrap(),
                         valid_from: None
                     },
                     TxOut {
@@ -224,7 +224,7 @@ fn exchange_commitment(
                 OrderStatus::Refunding => vec![
                     TxOut {
                         address: buyer_address,
-                        value: Coin::from_str(&record.price[..]).unwrap().add(Coin::from(10 * 10_000_000)).unwrap(),
+                        value: Coin::from_str(&record.amount[..]).unwrap().add(Coin::from(10 * 10_000_000)).unwrap(),
                         valid_from: None
                     }
                 ],
@@ -348,10 +348,10 @@ fn confirm(
         })
 }
 
-fn get_pending_payment_orders(
+fn get_pending_orders(
     pool: web::Data<Pool>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    db::execute_get_orders_by_status(pool.clone(), vec![OrderStatus::PendingPayment])
+    db::execute_get_orders_by_status(pool.clone(), vec![OrderStatus::PendingPayment, OrderStatus::Delivering, OrderStatus::Refunding])
         .from_err()
         .and_then(move |res| {
             Ok(HttpResponse::Ok().json(res))
@@ -360,7 +360,7 @@ fn get_pending_payment_orders(
 fn get_pending_response_orders(
     pool: web::Data<Pool>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    db::execute_get_orders_by_status(pool.clone(), vec![OrderStatus::Paid])
+    db::execute_get_orders_by_status(pool.clone(), vec![OrderStatus::PendingResponse])
         .from_err()
         .and_then(move |res| {
             Ok(HttpResponse::Ok().json(res))
@@ -369,7 +369,7 @@ fn get_pending_response_orders(
 fn get_settled_orders(
     pool: web::Data<Pool>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
-    db::execute_get_orders_by_status(pool.clone(), vec![OrderStatus::Paid, OrderStatus::Refunded])
+    db::execute_get_orders_by_status(pool.clone(), vec![OrderStatus::Completed, OrderStatus::Refunded])
         .from_err()
         .and_then(move |res| {
             Ok(HttpResponse::Ok().json(res))
@@ -452,15 +452,15 @@ fn main() {
                     .route(web::post().to_async(confirm_refund)),
             )
             .service(
-                web::resource("/order/pending-payment")
-                    .route(web::get().to_async(get_pending_payment_orders)),
+                web::resource("/order/pending")
+                    .route(web::get().to_async(get_pending_orders)),
             )
             .service(
-                web::resource("/order/pending-response")
+                web::resource("/order/outstanding")
                     .route(web::get().to_async(get_pending_response_orders)),
             )
             .service(
-                web::resource("/order/settled")
+                web::resource("/order/completed")
                     .route(web::get().to_async(get_settled_orders)),
             )
     });
