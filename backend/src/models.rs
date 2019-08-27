@@ -12,8 +12,10 @@ use crate::schema::order_details;
 pub struct OrderDetails {
     pub order_id: String,
     pub status: OrderStatus,
+    pub price: String,
     pub buyer_public_key: String,
     pub buyer_view_key: String,
+    pub buyer_address: String,
     pub escrow_public_key: String,
     pub escrow_view_key: String,
     pub session_id: String,
@@ -24,10 +26,11 @@ pub struct OrderDetails {
 #[sql_type = "Text"]
 pub enum OrderStatus {
     PendingPayment,
-    Paid,
+    PendingResponse,
     Delivering,
     Refunding,
-    Settled,
+    Paid,
+    Refunded,
 }
 impl<DB: Backend> ToSql<Text, DB> for OrderStatus
 where
@@ -39,10 +42,11 @@ where
     {
         let v = match *self {
             OrderStatus::PendingPayment => String::from("PendingPayment"),
-            OrderStatus::Paid => String::from("Paid"),
+            OrderStatus::PendingResponse => String::from("PendingResponse"),
             OrderStatus::Delivering => String::from("Delivering"),
             OrderStatus::Refunding => String::from("Refunding"),
-            OrderStatus::Settled => String::from("Settled"),
+            OrderStatus::Paid => String::from("Paid"),
+            OrderStatus::Refunded => String::from("Refunded"),
         };
         v.to_sql(out)
     }
@@ -55,46 +59,84 @@ where
         let v = String::from_sql(bytes)?;
         Ok(match &v[..] {
             "PendingPayment" => OrderStatus::PendingPayment,
-            "Paid" => OrderStatus::Paid,
+            "PendingResponse" => OrderStatus::PendingResponse,
             "Delivering" => OrderStatus::Delivering,
             "Refunding" => OrderStatus::Refunding,
-            "Settled" => OrderStatus::Settled,
+            "Paid" => OrderStatus::Paid,
+            "Refunded" => OrderStatus::Refunded,
             _ => return Err("Unsupported order status".into()),
         })
     }
 }
 #[derive(Deserialize)]
-pub struct Order {
+pub struct NewOrderRequest {
     pub order_id: String,
+    pub price: String,
     pub buyer_public_key: String,
     pub buyer_view_key: String,
+    pub buyer_address: String,
     pub escrow_public_key: String,
     pub escrow_view_key: String,
 }
-
 #[derive(Serialize)]
-pub struct Keys {
+pub struct NewOrderResponse {
     pub public_key: String,
     pub view_key: String,
 }
 #[derive(Deserialize)]
-pub struct AfterPaid {
+pub struct PaymentProof {
     pub order_id: String,
-    pub tx_id: String,
+    pub transaction_id: String,
+}
+#[derive(Deserialize)]
+pub struct OrderRequest {
+    pub order_id: String,
+}
+#[derive(Serialize)]
+pub struct OrderUpdatedResponse {
+    pub order_id: String,
+}
+#[derive(Serialize)]
+pub struct OrderResponse {
+    pub order_id: String,
+    pub price: String,
+    pub status: OrderStatus,
+    pub buyer_public_key: String,
+    pub buyer_view_key: String,
+    pub buyer_address: String,
+    pub escrow_public_key: String,
+    pub escrow_view_key: String,
+    pub session_id: String,
+    pub payment_transaction_id: String,
+    pub settlement_transaction_id: String,
+    // pub nonce_commitment: String,
+    // pub nonce: String,
+}
+#[derive(Deserialize)]
+pub struct ExchangeCommitmentRequest {
+    pub order_id: String,
     pub commitment: String,
 }
 #[derive(Serialize)]
-pub struct AfterShipped {
+pub struct ExchangeCommitmentResponse {
+    pub order_id: String,
     pub commitment: String,
     pub nonce: String,
+    pub transaction_id: String,
+}
+#[derive(Deserialize)]
+pub struct ConfirmRequest {
+    pub order_id: String,
+    pub nonce: String,
+    pub partial_signature: String
+}
+#[derive(Serialize)]
+pub struct ConfirmResponse {
+    pub transaction_id: String,
 }
 #[derive(Deserialize)]
 pub struct AfterReceived {
     pub order_id: String,
     pub partial_signature: String,
     pub nonce: String,
-}
-#[derive(Serialize)]
-pub struct BroadcastedTxn {
-    pub tx_id: String,
 }
