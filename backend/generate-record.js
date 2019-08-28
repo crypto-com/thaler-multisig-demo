@@ -14,17 +14,18 @@ function makeRandomAmount() {
 }
 
 function makeRecord(size) {
-  let type = "";
-  let amount = "";
-  let buyer_public_key = "";
-  let buyer_view_key = "";
-  let buyer_address = "";
-  let escrow_public_key = "";
-  let escrow_view_key = "";
-  let session_id = "";
-  let payment_transaction_id = "";
-  let settlement_transaction_id = "";
   for (let i = 0; i < size; i += 1) {
+    let type = "";
+    let amount = "";
+    let buyer_public_key = "";
+    let buyer_view_key = "";
+    let buyer_address = "";
+    let escrow_public_key = "";
+    let escrow_view_key = "";
+    let session_id = "";
+    let payment_transaction_id = "";
+    let settlement_transaction_id = "";
+
     const statusId = Math.floor(Math.random() * 6);
     buyer_public_key = makeRandomString(64);
     amount = makeRandomAmount();
