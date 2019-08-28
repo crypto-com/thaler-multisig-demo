@@ -1,0 +1,32 @@
+mat-sidenav {
+  width: 25%;
+  max-width: 250px;
+}
+
+.container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  margin-right: 0;
+  margin-left: 0;
+  max-width: 100%;
+}
+
+.mat-drawer {
+  background: none;
+}
+
+.mat-drawer-container {
+  background: none;
+}
+
+.mat-drawer-side {
+  border-right: 0;
+}
+
+mat-sidenav-content {
+  padding: 30px;
+}

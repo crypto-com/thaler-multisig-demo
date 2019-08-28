@@ -1,0 +1,25 @@
+mat-chip {
+    padding: 0 8px;
+    min-height: 25px;
+    font-size: 10px;
+    color: #fff !important;
+}
+
+.primary {
+    background-color: #007bff;
+}
+.secondary {
+    background-color: #6c757d;
+}
+.success {
+    background-color: #28a745;
+}
+.danger {
+    background-color: #dc3545;
+}
+.warning {
+    background-color: #ffc107;
+}
+.info {
+    background-color: #17a2b8;
+}

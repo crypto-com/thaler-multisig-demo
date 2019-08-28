@@ -1,0 +1,25 @@
+.container {
+  padding-top: 15px;
+
+  .search {
+    position: relative;
+    float: right;
+    margin-top: -55px;
+    border-radius: 5px;
+    box-shadow: none;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    z-index: 9999;
+  }
+
+  ::placeholder {
+    color: #ccc;
+    opacity: 1;
+  }
+  :-ms-input-placeholder {
+    color: #ccc;
+  }
+  ::-ms-input-placeholder {
+    color: #ccc;
+  }
+}
