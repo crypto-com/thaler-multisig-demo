@@ -10,15 +10,15 @@ const routes: Routes = [
     component: DashboardComponent
   },
   {
-    path: 'orders/pending-payment',
+    path: 'orders/pending',
     component: OrdersComponent
   },
   {
-    path: 'orders/pending-response',
+    path: 'orders/outstanding',
     component: OrdersComponent
   },
   {
-    path: 'orders/settled',
+    path: 'orders/completed',
     component: OrdersComponent
   },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }

@@ -7,11 +7,13 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { ModalModule } from "ngx-bootstrap/modal";
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -22,6 +24,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { StatusCellComponent } from './order-table/status-cell/status-cell.component';
 import { TransactionIdCellComponent } from './order-table/transaction-id-cell/transaction-id-cell.component';
 import { OrderTableactionCellComponent } from './order-tableaction-cell/order-tableaction-cell.component';
+import { ActionCellComponent } from './order-table/action-cell/action-cell.component';
+import { MarkOrderFormComponent } from './mark-order-form/mark-order-form.component';
+import { FormsModule } from '@angular/forms';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -30,7 +35,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 @NgModule({
   entryComponents: [
     StatusCellComponent,
-    TransactionIdCellComponent
+    TransactionIdCellComponent,
+    ActionCellComponent
   ],
   declarations: [
     AppComponent,
@@ -40,7 +46,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     DashboardComponent,
     StatusCellComponent,
     TransactionIdCellComponent,
-    OrderTableactionCellComponent
+    OrderTableactionCellComponent,
+    ActionCellComponent,
+    MarkOrderFormComponent
   ],
   imports: [
     BrowserModule,
@@ -56,11 +64,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     Ng2SmartTableModule,
     AngularFontAwesomeModule,
     BrowserAnimationsModule,
+    FormsModule,
+    ModalModule.forRoot(),
     MatSidenavModule,
     MatIconModule,
     MatBadgeModule,
     MatChipsModule,
-    MatTabsModule
+    MatTabsModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

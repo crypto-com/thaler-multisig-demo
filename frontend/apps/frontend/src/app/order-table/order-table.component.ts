@@ -1,9 +1,11 @@
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 
 import { LocalDataSource } from 'ng2-smart-table';
-import { ApiService, Order } from '../api.service';
+import { Order } from '../api.service';
 import { StatusCellComponent } from './status-cell/status-cell.component';
 import { TransactionIdCellComponent } from './transaction-id-cell/transaction-id-cell.component';
+import { CurrentOrdersService } from '../orders/current-orders.service';
+import { ActionCellComponent } from './action-cell/action-cell.component';
 @Component({
   selector: 'frontend-order-table',
   templateUrl: './order-table.component.html',
@@ -78,74 +80,29 @@ export class OrderTableComponent implements OnInit {
         renderComponent: TransactionIdCellComponent
       },
       action: {
-        title: 'Action'
+        title: 'Action',
+        type: 'custom',
+        renderComponent: ActionCellComponent
       }
     }
   };
 
-  // settings = {
-  //   columns: {
-  //     id: {
-  //       title: 'ID',
-  //       filter: false,
-  //     },
-  //     name: {
-  //       title: 'Full Name',
-  //       filter: {
-  //         type: 'list',
-  //         config: {
-  //           selectText: 'Select...',
-  //           list: [
-  //             { value: 'Glenna Reichert', title: 'Glenna Reichert' },
-  //             { value: 'Kurtis Weissnat', title: 'Kurtis Weissnat' },
-  //             { value: 'Chelsey Dietrich', title: 'Chelsey Dietrich' },
-  //           ],
-  //         },
-  //       },
-  //     },
-  //     email: {
-  //       title: 'Email',
-  //       filter: {
-  //         type: 'completer',
-  //         config: {
-  //           completer: {
-  //             data: this.data,
-  //             searchFields: 'email',
-  //             titleField: 'email',
-  //           },
-  //         },
-  //       },
-  //     },
-  //     passed: {
-  //       title: 'Passed',
-  //       filter: {
-  //         type: 'checkbox',
-  //         config: {
-  //           true: 'Yes',
-  //           false: 'No',
-  //           resetText: 'clear',
-  //         },
-  //       },
-  //     },
-  //   },
-  // };
-
-  constructor(private apiService: ApiService) {}
+  constructor(private currentOrders: CurrentOrdersService) {
+    this.source = new LocalDataSource([]);
+  }
 
   ngOnInit() {
-    this.parseData();
+    this.subscribeToOrders();
   }
 
-  ngOnChanges(_changes: SimpleChanges) {
-    this.parseData();
-  }
-
-  private parseData() {
-    this.source = new LocalDataSource(this.data);
+  private subscribeToOrders() {
+    this.currentOrders.$orders.subscribe(orders => {
+      console.log(orders);
+      this.source.load(orders);
+    })
   }
 
   onSearch(query: string = '') {
-    // this.source.load(this.newData);
     if (query === '') {
       this.source.setFilter([]);
       return;

@@ -43,11 +43,13 @@
     "@ngx-translate/http-loader": "^4.0.0",
     "@nrwl/angular": "8.4.1",
     "angular-font-awesome": "^3.1.2",
+    "bignumber.js": "^9.0.0",
     "bootstrap": "^4.3.1",
     "core-js": "^2.5.4",
     "font-awesome": "^4.7.0",
     "ng2-completer": "^3.0.2",
     "ng2-smart-table": "^1.5.0",
+    "ngx-bootstrap": "^5.1.1",
     "rxjs": "~6.4.0",
     "zone.js": "^0.9.1"
   },

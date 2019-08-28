@@ -31,8 +31,8 @@ export class StatusCellComponent implements ViewCell, OnInit {
         return "Delivering";
       case OrderStatus.Refunding:
         return "Refunding";
-      case OrderStatus.Delivered:
-        return "Delivered";
+      case OrderStatus.Completed:
+        return "Completed";
       case OrderStatus.Refunded:
         return "Refunded";
     }
@@ -48,7 +48,7 @@ export class StatusCellComponent implements ViewCell, OnInit {
         return "info";
       case OrderStatus.Refunding:
         return "danger";
-      case OrderStatus.Delivered:
+      case OrderStatus.Completed:
         return "success";
       case OrderStatus.Refunded:
         return "danger";

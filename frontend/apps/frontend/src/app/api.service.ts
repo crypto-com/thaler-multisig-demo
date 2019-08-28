@@ -6,50 +6,61 @@ import { Observable, BehaviorSubject, interval } from 'rxjs'
   providedIn: 'root'
 })
 export class ApiService {
-  public pendingPaymentOrders: BehaviorSubject<Order[]>;
-  public pendingResponseOrders: BehaviorSubject<Order[]>;
-  public settledOrders: BehaviorSubject<Order[]>;
+  public $pendingOrders: BehaviorSubject<Order[]>;
+  public $outstandingOrders: BehaviorSubject<Order[]>;
+  public $completedOrders: BehaviorSubject<Order[]>;
   private baseUrl = 'http://localhost:8080';
 
   constructor(private http: HttpClient) {
-    this.pendingPaymentOrders = new BehaviorSubject([]);
-    this.pendingResponseOrders = new BehaviorSubject([]);
-    this.settledOrders = new BehaviorSubject([]);
+    this.$pendingOrders = new BehaviorSubject([]);
+    this.$outstandingOrders = new BehaviorSubject([]);
+    this.$completedOrders = new BehaviorSubject([]);
 
-    this.updateRegularly();
+    this.updateOrdersRegularly();
   }
 
-  private updateRegularly() {
-    interval(5000).subscribe(() => {
-      this.update();
+  private updateOrdersRegularly() {
+    this.updateOrders();
+    interval(2000).subscribe(() => {
+      this.updateOrders();
     });
   }
 
-  private update() {
-    this.getPendingPaymentOrders().subscribe(orders => {
-      this.pendingPaymentOrders.next(orders);
+  updateOrders() {
+    this.getPendingOrders().subscribe(orders => {
+      this.$pendingOrders.next(orders);
     }, console.error);
-    this.getPendingResponseOrders().subscribe(orders => {
-      this.pendingResponseOrders.next(orders);
+    this.getOutstandingOrders().subscribe(orders => {
+      this.$outstandingOrders.next(orders);
     }, console.error);
-    this.getSettledOrders().subscribe(orders => {
-      this.settledOrders.next(orders);
+    this.getCompletedOrders().subscribe(orders => {
+      this.$completedOrders.next(orders);
     }, console.error);
   }
 
-  getPendingPaymentOrders(): Observable<Order[]> {
+  getPendingOrders(): Observable<Order[]> {
     const url = `${this.baseUrl}/order/pending`;
     return this.http.get<Order[]>(url);
   }
 
-  getPendingResponseOrders(): Observable<Order[]> {
+  getOutstandingOrders(): Observable<Order[]> {
     const url = `${this.baseUrl}/order/outstanding`;
     return this.http.get<Order[]>(url);
   }
 
-  getSettledOrders(): Observable<Order[]> {
+  getCompletedOrders(): Observable<Order[]> {
     const url = `${this.baseUrl}/order/completed`;
     return this.http.get<Order[]>(url);
+  }
+
+  markDelivering(orderId: string): Observable<void> {
+    const url = `${this.baseUrl}/order/delivering?order_id=${orderId}`;
+    return this.http.post<void>(url, null);
+  }
+
+  markRefunding(orderId: string): Observable<void> {
+    const url = `${this.baseUrl}/order/refunding?order_id=${orderId}`;
+    return this.http.post<void>(url, null);
   }
 }
 
@@ -67,6 +78,6 @@ export enum OrderStatus {
   PendingResponse = 'PendingResponse',
   Delivering = 'Delivering',
   Refunding = 'Refunding',
-  Delivered = 'Delivered',
+  Completed = 'Completed',
   Refunded = 'Refunded',
 }

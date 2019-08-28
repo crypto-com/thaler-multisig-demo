@@ -23,7 +23,7 @@ export class SideNavmenuComponent implements OnInit {
       }
     });
 
-    this.apiService.pendingResponseOrders.subscribe(orders => {
+    this.apiService.$outstandingOrders.subscribe(orders => {
       this.outstandingOrderSize = orders.length;
     });
   }

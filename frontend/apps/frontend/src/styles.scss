@@ -16,8 +16,9 @@ body {
 
 ng2-smart-table {
   font-weight: normal !important;
-  
-  .ng2-smart-sort, .ng2-smart-sort-link {
+
+  .ng2-smart-sort,
+  .ng2-smart-sort-link {
     color: #888 !important;
     text-transform: uppercase !important;
     font-size: 12px !important;
@@ -36,12 +37,56 @@ ng2-smart-table {
   }
 }
 
-mat-tab-group {
-  .mat-tab-label-content {
-    color: #1199fa !important;
-  }
+.mat-tab-link,
+.mat-tab-label-content {
+  color: #1199fa !important;
+}
 
-  .mat-ink-bar {
-    background-color: #1199fa !important;
+.mat-ink-bar {
+  background-color: #1199fa !important;
+}
+
+.primary {
+  background-color: #007bff;
+}
+.secondary {
+  background-color: #6c757d;
+}
+.success {
+  background-color: #28a745;
+}
+.danger {
+  background-color: #dc3545;
+}
+.warning {
+  background-color: #ffc107;
+}
+.info {
+  background-color: #17a2b8;
+}
+
+ng2-smart-table-pager {
+  margin-top: 10px;
+  .ng2-smart-pagination {
+    .page-link,
+    .page-link-prev,
+    .page-link-next {
+      border: 0px;
+      background-color: rgba(73, 63, 63, 0);
+    }
+    .page-link-prev,
+    .page-link-next {
+      padding-top: 11px;
+      padding-bottom: 10px;
+    }
+    .page-item.active .page-link {
+      background-color: #1199fa;
+      border-color: #1199fa;
+      border-radius: 15px;
+      font-family: Helvetica;
+      font-size: 12px;
+      color: #ffffff;
+      width: 30px;
+    }
   }
 }
