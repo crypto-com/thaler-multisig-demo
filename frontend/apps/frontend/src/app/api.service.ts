@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, interval } from 'rxjs'
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable, BehaviorSubject, interval } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -54,13 +54,37 @@ export class ApiService {
   }
 
   markDelivering(orderId: string): Observable<void> {
-    const url = `${this.baseUrl}/order/delivering?order_id=${orderId}`;
-    return this.http.post<void>(url, null);
+    const url = `${this.baseUrl}/order/delivering`;
+    return this.http.post<void>(
+      url,
+      new HttpParams({
+        fromObject: {
+          order_id: orderId
+        }
+      }),
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/x-www-form-urlencoded'
+        })
+      }
+    );
   }
 
   markRefunding(orderId: string): Observable<void> {
-    const url = `${this.baseUrl}/order/refunding?order_id=${orderId}`;
-    return this.http.post<void>(url, null);
+    const url = `${this.baseUrl}/order/refunding`;
+    return this.http.post<void>(
+      url,
+      new HttpParams({
+        fromObject: {
+          order_id: orderId
+        }
+      }),
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/x-www-form-urlencoded'
+        })
+      }
+    );
   }
 }
 
@@ -71,7 +95,7 @@ export type Order = {
   buyer_address: string;
   payment_transaction_id: string;
   settlement_transaction_id: string;
-}
+};
 
 export enum OrderStatus {
   PendingPayment = 'PendingPayment',
@@ -79,5 +103,5 @@ export enum OrderStatus {
   Delivering = 'Delivering',
   Refunding = 'Refunding',
   Completed = 'Completed',
-  Refunded = 'Refunded',
+  Refunded = 'Refunded'
 }
