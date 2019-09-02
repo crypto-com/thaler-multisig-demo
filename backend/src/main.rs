@@ -51,11 +51,12 @@ fn new_order(
     let passphrase = SecUtf8::from("passphrase");
     let name = params.order_id.to_string();
     wallet.new_wallet(&name, &passphrase).unwrap();
-    wallet.new_transfer_address(&name, &passphrase).unwrap();
+    let transfer_address = wallet.new_transfer_address(&name, &passphrase).unwrap();
     let ref public_key = &wallet.public_keys(&name, &passphrase).unwrap()[0];
     let view_key = wallet.view_key(&name, &passphrase).unwrap();
     let res = NewOrderResponse {
         public_key: public_key.to_string(),
+        address: transfer_address.to_string(),
         view_key: view_key.to_string(),
     };
     db::execute_register_order(pool, params)
@@ -524,7 +525,7 @@ fn main() {
             .service(web::resource("/order/refunding").route(web::post().to_async(mark_refunding)))
             .service(
                 web::resource("/order/exchange-commitment")
-                    .route(web::post().to_async(mark_refunding)),
+                    .route(web::post().to_async(exchange_commitment)),
             )
             .service(
                 web::resource("/order/confirm/delivery")
