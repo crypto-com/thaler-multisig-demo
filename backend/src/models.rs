@@ -128,7 +128,7 @@ pub struct ExchangeCommitmentResponse {
 pub struct ConfirmRequest {
     pub order_id: String,
     pub nonce: String,
-    pub partial_signature: String
+    pub partial_signature: String,
 }
 #[derive(Serialize)]
 pub struct ConfirmResponse {
