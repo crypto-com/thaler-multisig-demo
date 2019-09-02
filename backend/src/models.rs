@@ -81,6 +81,7 @@ pub struct NewOrderRequest {
 #[derive(Serialize)]
 pub struct NewOrderResponse {
     pub public_key: String,
+    pub address: String,
     pub view_key: String,
 }
 #[derive(Deserialize)]
