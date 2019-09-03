@@ -1,18 +1,19 @@
 /*
    Crypto.com Chain Multi-sig backend demo in Actix-Web
 */
+#[macro_use]
+extern crate diesel;
+
 use actix_cors::Cors;
 use actix_web::{http::header, middleware, web, App, Error as AWError, HttpResponse, HttpServer};
-use futures::future::Future;
-use simple_error::SimpleError;
-use std::ops::Add;
-mod db;
-use backend::models::*;
-use listenfd::ListenFd;
-
 use diesel::prelude::*;
 use diesel::r2d2::{self, ConnectionManager};
-type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+use futures::future::{self, Future};
+use listenfd::ListenFd;
+use secstr::SecUtf8;
+use std::ops::Add;
+use std::str::FromStr;
+use uuid::Uuid;
 
 use chain_core::init::address::CroAddress;
 use chain_core::init::coin::Coin;
@@ -22,27 +23,138 @@ use chain_core::tx::data::attribute::TxAttributes;
 use chain_core::tx::data::input::TxoPointer;
 use chain_core::tx::data::output::TxOut;
 use chain_core::tx::data::{Tx, TxId};
+use chain_core::tx::fee::LinearFee;
 use chain_core::tx::TransactionId;
 use client_common::storage::SledStorage;
-use client_common::tendermint::RpcClient;
-use client_common::{PublicKey, Transaction};
-use client_core::wallet::DefaultWalletClient;
-use client_core::wallet::WalletClient;
-use client_index::index::{DefaultIndex, Index};
-use secstr::SecUtf8;
-use std::str::FromStr;
+use client_common::tendermint::{Client, RpcClient};
+use client_common::{PublicKey, Transaction, Storage};
+use client_core::signer::DefaultSigner;
+use client_core::transaction_builder::{DefaultTransactionBuilder, UnauthorizedTransactionBuilder};
+use client_core::wallet::{DefaultWalletClient, MultiSigWalletClient, WalletClient};
+use client_core::TransactionBuilder;
+use client_index::cipher::MockAbciTransactionObfuscation;
+use client_index::handler::{DefaultBlockHandler, DefaultTransactionHandler};
+use client_index::index::{DefaultIndex, Index, UnauthorizedIndex};
+use client_index::synchronizer::ManualSynchronizer;
 
-use client_core::wallet::MultiSigWalletClient;
+use crate::models::*;
+
+type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+
+mod db;
+mod models;
+mod schema;
 
 const NETWORK_ID: &str = "AB";
-const TENDERMINT_URL: &str = "http://localhost";
+const TENDERMINT_URL: &str = "http://localhost:16657";
 
-// use chain_core::tx::data::Tx;
-// use chain_core::tx::TransactionId;
+type AppSigner = DefaultSigner<SledStorage>;
+type AppIndex = DefaultIndex<SledStorage, RpcClient>;
+type AppTransactionCipher = MockAbciTransactionObfuscation<RpcClient>;
+type AppTxBuilder = DefaultTransactionBuilder<AppSigner, LinearFee, AppTransactionCipher>;
+type AppWalletClient = DefaultWalletClient<SledStorage, AppIndex, AppTxBuilder>;
+type AppTransactionHandler = DefaultTransactionHandler<SledStorage>;
+type AppBlockHandler =
+    DefaultBlockHandler<AppTransactionCipher, AppTransactionHandler, SledStorage>;
+type AppSynchronizer = ManualSynchronizer<SledStorage, RpcClient, AppBlockHandler>;
+fn make_app() -> (AppWalletClient, AppIndex, AppSynchronizer) {
+    let tendermint_client = RpcClient::new(TENDERMINT_URL);
+    let storage = SledStorage::new(".client-storage").unwrap();
+    let signer = DefaultSigner::new(storage.clone());
+    let transaction_cipher = MockAbciTransactionObfuscation::new(tendermint_client.clone());
+    let transaction_handler = DefaultTransactionHandler::new(storage.clone());
+    let block_handler = DefaultBlockHandler::new(
+        transaction_cipher.clone(),
+        transaction_handler,
+        storage.clone(),
+    );
+
+    let index = DefaultIndex::new(storage.clone(), tendermint_client.clone());
+    let transaction_builder = DefaultTransactionBuilder::new(
+        signer,
+        tendermint_client.genesis().unwrap().fee_policy(),
+        transaction_cipher.clone(),
+    );
+    let wallet = DefaultWalletClient::builder()
+        .with_wallet(storage.clone())
+        .with_transaction_read(index.clone())
+        .with_transaction_write(transaction_builder)
+        .build()
+        .unwrap();
+    let synchronizer =
+        ManualSynchronizer::new(storage.clone(), tendermint_client.clone(), block_handler);
+    
+    (wallet, index, synchronizer)
+}
+
 fn new_order(
     pool: web::Data<Pool>,
     params: web::Form<NewOrderRequest>,
 ) -> impl Future<Item = HttpResponse, Error = AWError> {
+    let (wallet, _, _) = make_app();
+    let wallet_name = Uuid::new_v4().to_string();
+    let passphrase = SecUtf8::from("passphrase");
+
+    wallet.new_wallet(&wallet_name, &passphrase).expect("new_wallet error");
+
+    let merchant_address = wallet.new_transfer_address(&wallet_name, &passphrase).unwrap();
+    let merchant_public_key = &wallet.public_keys(&wallet_name, &passphrase).unwrap()[0];
+    let merchant_public_key = merchant_public_key.to_owned();
+    let merchant_view_key = wallet.view_key(&wallet_name, &passphrase).unwrap();
+
+    let buyer_public_key = PublicKey::from_str(&params.buyer_public_key.to_string()).unwrap();
+    let escrow_public_key = PublicKey::from_str(&params.escrow_public_key.to_string()).unwrap();
+
+    let multisig_address = wallet
+        .new_multisig_transfer_address(
+            &wallet_name,
+            &passphrase,
+            vec![
+                merchant_public_key.clone(),
+                buyer_public_key,
+                escrow_public_key,
+            ],
+            merchant_public_key.clone(),
+            2,
+            3,
+        )
+        .expect("new_multisig_transfer_address error");
+
+    let res = NewOrderResponse {
+        public_key: merchant_public_key.to_string(),
+        address: merchant_address.to_string(),
+        view_key: merchant_view_key.to_string(),
+        multisig_address: multisig_address.to_string(),
+    };
+
+    let order = Order {
+        order_id: params.order_id.to_string(),
+        amount: params.amount.to_string(),
+        wallet_name: wallet_name.clone(),
+        status: OrderStatus::PendingPayment,
+        buyer_public_key: params.buyer_public_key.to_string(),
+        buyer_view_key: params.buyer_view_key.to_string(),
+        buyer_address: params.buyer_address.to_string(),
+        escrow_public_key: params.escrow_public_key.to_string(),
+        escrow_view_key: params.escrow_view_key.to_string(),
+        session_id: "".to_string(),
+        payment_transaction_id: "".to_string(),
+        settlement_transaction_id: "".to_string(),
+    };
+    db::execute_register_order(pool, order)
+        .from_err()
+        .and_then(|_| Ok(HttpResponse::Ok().json(res)))
+}
+
+fn submit_payment_proof(
+    pool: web::Data<Pool>,
+    params: web::Form<PaymentProof>,
+) -> impl Future<Item = HttpResponse, Error = AWError> {
+    let order_id = params.order_id.to_string();
+    let transaction_id = params.transaction_id.to_string();
+    let transaction = get_transaction_by_id(transaction_id, order_id.clone())
+        .expect("get_transaction_by_id error");
+
     let storage = SledStorage::new(".client-storage").unwrap();
     let wallet = DefaultWalletClient::builder()
         .with_wallet(storage.clone())
@@ -50,42 +162,78 @@ fn new_order(
         .unwrap();
     let passphrase = SecUtf8::from("passphrase");
     let name = params.order_id.to_string();
-    wallet.new_wallet(&name, &passphrase).unwrap();
-    let transfer_address = wallet.new_transfer_address(&name, &passphrase).unwrap();
-    let ref public_key = &wallet.public_keys(&name, &passphrase).unwrap()[0];
-    let view_key = wallet.view_key(&name, &passphrase).unwrap();
-    let res = NewOrderResponse {
-        public_key: public_key.to_string(),
-        address: transfer_address.to_string(),
-        view_key: view_key.to_string(),
-    };
-    db::execute_register_order(pool, params)
-        .from_err()
-        .and_then(|_| Ok(HttpResponse::Ok().json(res)))
-}
-fn submit_payment_proof(
-    pool: web::Data<Pool>,
-    params: web::Form<PaymentProof>,
-) -> impl Future<Item = HttpResponse, Error = AWError> {
-    let order_id = params.order_id.to_string();
-    // TODO: Should check for validity of the transaction id
-    // - Is the transaction output to the MuSig address?
 
     db::execute_get_order_by_id(pool.clone(), order_id.clone())
         .from_err()
+        .and_then(move |record| {
+            if let Transaction::TransferTransaction(tx) = transaction {
+                Ok((tx, record))
+            } else {
+                Err(AWError::from(
+                    HttpResponse::BadRequest()
+                        .reason("Invalid transaction type")
+                        .finish(),
+                ))
+            }
+        })
+        .and_then(move |(tx, record)| {
+            if tx.outputs.len() == 0 {
+                return Err(AWError::from(
+                    HttpResponse::BadRequest()
+                        .reason("Transaction has no output")
+                        .finish(),
+                ));
+            }
+
+            let merchant_public_key = &wallet.public_keys(&name, &passphrase).unwrap()[0];
+            let merchant_public_key = merchant_public_key.to_owned();
+            let buyer_public_key =
+                PublicKey::from_str(&record.buyer_public_key.to_string()).unwrap();
+            let escrow_public_key =
+                PublicKey::from_str(&record.escrow_public_key.to_string()).unwrap();
+            let multisig_address = wallet
+                .new_multisig_transfer_address(
+                    &name,
+                    &passphrase,
+                    vec![
+                        merchant_public_key.clone(),
+                        buyer_public_key.clone(),
+                        escrow_public_key.clone(),
+                    ],
+                    merchant_public_key.clone(),
+                    2,
+                    3,
+                )
+                .unwrap();
+            if tx.outputs[0].address.to_cro().unwrap() != multisig_address.to_string() {
+                return Err(AWError::from(
+                    HttpResponse::BadRequest()
+                        .reason("Incorrect transaction output address")
+                        .finish(),
+                ));
+            }
+            if tx.outputs[0].value != Coin::from_str(&record.amount).unwrap() {
+                return Err(AWError::from(
+                    HttpResponse::BadRequest()
+                        .reason("Incorrect transaction output amount")
+                        .finish(),
+                ));
+            }
+            Ok(())
+        })
         .and_then(move |_| {
             db::execute_store_payment_transaction_id(
                 pool,
                 params.order_id.to_string(),
                 params.transaction_id.to_string(),
             )
-            .from_err()
-            .and_then(move |_| {
-                let res = OrderUpdatedResponse { order_id };
-                Ok(HttpResponse::Ok().json(res))
-            })
+        })
+        .and_then(|_| {
+            let res = OrderUpdatedResponse { order_id };
+            Ok(HttpResponse::Ok().json(res))
         })
 }
+
 fn get_order(
     pool: web::Data<Pool>,
     params: web::Query<OrderRequest>,
@@ -220,7 +368,8 @@ fn exchange_commitment(
                     },
                     TxOut {
                         address: buyer_address,
-                        value: Coin::from(10 * 10_000_000),
+                        // FIXME: Change back after debug
+                        value: Coin::from(10),
                         valid_from: None,
                     },
                 ],
@@ -275,15 +424,17 @@ fn exchange_commitment(
                 )
                 .expect("add_nonce_commitment error");
 
-            let merchant_nonce_commitment =
-                wallet.nonce_commitment(&session_id, &passphrase).unwrap();
-            let merchant_nonce = wallet.nonce(&session_id, &passphrase).unwrap();
+            let merchant_nonce_commitment = wallet
+                .nonce_commitment(&session_id, &passphrase)
+                .expect("nonce_commitment error");
+            let merchant_nonce = wallet.nonce(&session_id, &passphrase).expect("nonce error");
 
             let res = ExchangeCommitmentResponse {
                 order_id: params.order_id.to_string(),
                 commitment: hex::encode(merchant_nonce_commitment),
                 nonce: merchant_nonce.to_string(),
                 transaction_id: hex::encode(transaction.id()),
+                transaction: transaction.clone(),
             };
 
             db::execute_store_exchanged_data(
@@ -323,12 +474,30 @@ fn confirm(
 
     let tendermint_client = RpcClient::new(TENDERMINT_URL);
     let storage = SledStorage::new(".client-storage").unwrap();
-    let index = DefaultIndex::new(storage.clone(), tendermint_client);
+    let signer = DefaultSigner::new(storage.clone());
+    let transaction_cipher = MockAbciTransactionObfuscation::new(tendermint_client.clone());
+    let transaction_handler = DefaultTransactionHandler::new(storage.clone());
+    let block_handler = DefaultBlockHandler::new(
+        transaction_cipher.clone(),
+        transaction_handler,
+        storage.clone(),
+    );
+
+    let index = DefaultIndex::new(storage.clone(), tendermint_client.clone());
+    let transaction_builder = DefaultTransactionBuilder::new(
+        signer,
+        tendermint_client.genesis().unwrap().fee_policy(),
+        transaction_cipher.clone(),
+    );
     let wallet = DefaultWalletClient::builder()
         .with_wallet(storage.clone())
-        .with_transaction_read(index.clone())
+        .with_transaction_read(index)
+        .with_transaction_write(transaction_builder)
         .build()
         .unwrap();
+    let synchronizer =
+        ManualSynchronizer::new(storage.clone(), tendermint_client.clone(), block_handler);
+
     let passphrase = SecUtf8::from("passphrase");
     let name = params.order_id.to_string();
 
@@ -344,16 +513,26 @@ fn confirm(
             let buyer_public_key =
                 PublicKey::from_str(&record.buyer_public_key.to_string()).unwrap();
 
-            wallet.add_nonce(&session_id, &passphrase, &buyer_nonce, &buyer_public_key);
+            wallet
+                .add_nonce(&session_id, &passphrase, &buyer_nonce, &buyer_public_key)
+                .expect("add_nonce error");
 
-            wallet.add_partial_signature(
-                &session_id,
-                &passphrase,
-                buyer_partial_signature,
-                &buyer_public_key,
-            );
+            wallet
+                .partial_signature(&session_id, &passphrase)
+                .expect("partial_signature error");
 
-            wallet.signature(&session_id, &passphrase).unwrap();
+            wallet
+                .add_partial_signature(
+                    &session_id,
+                    &passphrase,
+                    buyer_partial_signature,
+                    &buyer_public_key,
+                )
+                .expect("add_partial_signature error");
+
+            let signature = wallet
+                .signature(&session_id, &passphrase)
+                .expect("signature error");
 
             // Construct transaction for signing and broadcast
             let merchant_public_key = wallet.public_keys(&name, &passphrase).unwrap()[0].clone();
@@ -367,7 +546,50 @@ fn confirm(
 
             let transaction_id_vec = hex::decode(&record.payment_transaction_id).unwrap();
             let mut transaction_id = [0; 32];
-            transaction_id.copy_from_slice(&transaction_id_vec);
+
+            // DEBUG:
+            use chain_core::tx::witness::TxInWitness;
+            use chain_tx_validation::witness::verify_tx_address;
+            let escrow_public_key =
+                PublicKey::from_str(&record.escrow_public_key.to_string()).unwrap();
+            let multisig_address = wallet
+                .new_multisig_transfer_address(
+                    &name,
+                    &passphrase,
+                    vec![
+                        merchant_public_key.clone(),
+                        buyer_public_key.clone(),
+                        escrow_public_key.clone(),
+                    ],
+                    merchant_public_key.clone(),
+                    2,
+                    3,
+                )
+                .unwrap();
+            let proof = wallet
+                .generate_proof(
+                    &name,
+                    &passphrase,
+                    &multisig_address,
+                    vec![merchant_public_key.clone(), buyer_public_key.clone()],
+                )
+                .unwrap();
+            let witness = TxInWitness::TreeSig(signature, proof);
+            assert!(verify_tx_address(&witness, &transaction_id, &multisig_address).is_ok());
+            // DEBUG:
+
+            let merchant_private_key = wallet
+                .private_key(&passphrase, &merchant_view_key)
+                .unwrap()
+                .unwrap();
+            let merchant_staking_addresses = wallet.staking_addresses(&name, &passphrase).unwrap();
+            synchronizer.sync(
+                &merchant_staking_addresses,
+                &merchant_view_key,
+                &merchant_private_key,
+                None,
+                None,
+            );
 
             let inputs = vec![TxoPointer {
                 id: transaction_id,
@@ -462,34 +684,52 @@ fn get_settled_orders(pool: web::Data<Pool>) -> impl Future<Item = HttpResponse,
     .and_then(move |res| Ok(HttpResponse::Ok().json(res)))
 }
 
-fn get_transaction_by_id(
-    transaction_id: String,
-    order_id: String,
-) -> Result<Option<Transaction>, SimpleError> {
+fn get_transaction_by_id(transaction_id: String, order_id: String) -> Option<Transaction> {
     let tendermint_client = RpcClient::new(TENDERMINT_URL);
     let storage = SledStorage::new(".client-storage").unwrap();
-    let index = DefaultIndex::new(storage.clone(), tendermint_client);
+    let index = DefaultIndex::new(storage.clone(), tendermint_client.clone());
+    let transaction_cipher = MockAbciTransactionObfuscation::new(tendermint_client.clone());
+    let transaction_handler = DefaultTransactionHandler::new(storage.clone());
+    let block_handler = DefaultBlockHandler::new(
+        transaction_cipher.clone(),
+        transaction_handler,
+        storage.clone(),
+    );
+
     let wallet = DefaultWalletClient::builder()
         .with_wallet(storage.clone())
         .build()
         .unwrap();
+    let synchronizer =
+        ManualSynchronizer::new(storage.clone(), tendermint_client.clone(), block_handler);
+
     let passphrase = SecUtf8::from("passphrase");
     let name = order_id.to_string();
 
+    let merchant_view_key = wallet.view_key(&name, &passphrase).unwrap();
+    let merchant_private_key = wallet
+        .private_key(&passphrase, &merchant_view_key)
+        .unwrap()
+        .unwrap();
+    let merchant_staking_addresses = wallet.staking_addresses(&name, &passphrase).unwrap();
+    synchronizer
+        .sync(
+            &merchant_staking_addresses,
+            &merchant_view_key,
+            &merchant_private_key,
+            None,
+            None,
+        )
+        .expect("sync error");
+
     let transaction_id_vec = hex::decode(transaction_id).unwrap();
-    if transaction_id_vec.len() != 32 {
-        return Err(SimpleError::new(format!(
-            "Invalid transaction id length: {}",
-            transaction_id_vec.len()
-        )));
-    }
     let mut transaction_id = [0; 32];
     transaction_id.copy_from_slice(&transaction_id_vec);
 
     let transaction_id: &TxId = &transaction_id;
     index
         .transaction(transaction_id)
-        .map_err(|err| SimpleError::new(format!("{}", err)))
+        .expect("transaction error")
 }
 
 fn main() {

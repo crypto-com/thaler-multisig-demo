@@ -5,13 +5,16 @@ use diesel::sql_types::*;
 use serde::{Deserialize, Serialize};
 use std::io;
 
-use crate::schema::order_details;
+use chain_core::tx::data::Tx;
+
+use crate::schema::orders;
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
-#[table_name = "order_details"]
-pub struct OrderDetails {
+#[table_name = "orders"]
+pub struct Order {
     pub order_id: String,
     pub status: OrderStatus,
+    pub wallet_name: String,
     pub amount: String,
     pub buyer_public_key: String,
     pub buyer_view_key: String,
@@ -83,6 +86,7 @@ pub struct NewOrderResponse {
     pub public_key: String,
     pub address: String,
     pub view_key: String,
+    pub multisig_address: String,
 }
 #[derive(Deserialize)]
 pub struct PaymentProof {
@@ -124,6 +128,7 @@ pub struct ExchangeCommitmentResponse {
     pub commitment: String,
     pub nonce: String,
     pub transaction_id: String,
+    pub transaction: Tx,
 }
 #[derive(Deserialize)]
 pub struct ConfirmRequest {
