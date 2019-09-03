@@ -17,6 +17,7 @@ function makeRecord(size) {
   for (let i = 0; i < size; i += 1) {
     let type = "";
     let amount = "";
+    let wallet_name = "";
     let buyer_public_key = "";
     let buyer_view_key = "";
     let buyer_address = "";
@@ -27,6 +28,7 @@ function makeRecord(size) {
     let settlement_transaction_id = "";
 
     const statusId = Math.floor(Math.random() * 6);
+    wallet_name = makeRandomString(64);
     buyer_public_key = makeRandomString(64);
     amount = makeRandomAmount();
     buyer_view_key = makeRandomString(64);
@@ -65,7 +67,7 @@ function makeRecord(size) {
         break;
     }
     console.log(
-      `INSERT INTO order_details VALUES('${i}','${type}','${amount}','${buyer_public_key}','${buyer_view_key}','${buyer_address}','${escrow_public_key}','${escrow_view_key}','${session_id}','${payment_transaction_id}','${settlement_transaction_id}');`
+      `INSERT INTO orders VALUES('${i}','${type}','${wallet_name}','${amount}','${buyer_public_key}','${buyer_view_key}','${buyer_address}','${escrow_public_key}','${escrow_view_key}','${session_id}','${payment_transaction_id}','${settlement_transaction_id}');`
     );
   }
 }
