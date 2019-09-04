@@ -1,3 +1,4 @@
+/backend/chain
 /backend/target
 /backend/Cargo.lock
 /backend/*.db

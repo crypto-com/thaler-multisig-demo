@@ -1,25 +1,27 @@
 [package]
 name = "backend"
-version = "0.1.0"
-authors = ["Carson Yan <carson.yan@cryprto.com>"]
+version = "0.2.0"
+authors = ["Carson Yan <carson.yan@cryprto.com>", "Calvin Lau <calvin@crypto.com>"]
 edition = "2018"
 
 [dependencies]
-actix-web = "1.0.0"
+actix-web = "1.0.7"
 actix-cors = "0.1.0"
-chain-core = { path = "./chain/chain-core" }
-client-core = { path = "./chain/client-core" }
-client-common = { path = "./chain/client-common" }
-client-index = { path = "./chain/client-index" }
+chain-core = { git = "https://github.com/crypto-com/chain.git", rev = "44ba6caaa9cb5f10be57cd2a89a954f0e4557472", features = ["serde"] }
+chain-tx-validation = { git = "https://github.com/crypto-com/chain.git", rev = "44ba6caaa9cb5f10be57cd2a89a954f0e4557472" }
+client-core = { git = "https://github.com/crypto-com/chain.git", rev = "44ba6caaa9cb5f10be57cd2a89a954f0e4557472" }
+client-common = { git = "https://github.com/crypto-com/chain.git", rev = "44ba6caaa9cb5f10be57cd2a89a954f0e4557472" }
+client-index = { git = "https://github.com/crypto-com/chain.git", rev = "44ba6caaa9cb5f10be57cd2a89a954f0e4557472" }
+diesel = { version = "1.4.2", features = ["sqlite","r2d2"] }
+dotenv = "0.9.0"
 env_logger = "0.5"
 failure = "0.1.1"
 futures = "0.1"
 hex = "0.3"
-secstr = "0.3.2"
 r2d2 = "0.8.2"
 r2d2_sqlite = "0.8.0"
 rusqlite = "0.16"
+secstr = "0.3.2"
 serde = "1.0"
 listenfd = "0.3"
-diesel = { version = "1.4.2", features = ["sqlite","r2d2"] }
-dotenv = "0.9.0"
+uuid = { version = "0.7.4", features = ["v4"] }
