@@ -11,7 +11,7 @@ use diesel::r2d2::{self, ConnectionManager};
 use futures::future::Future;
 use listenfd::ListenFd;
 use secstr::SecUtf8;
-use std::ops::{Add, Sub};
+use std::ops::Sub;
 use std::str::FromStr;
 use uuid::Uuid;
 
@@ -803,7 +803,7 @@ fn construct_tx(
         OrderStatus::Refunding => vec![TxOut {
             address: buyer_address,
             value: Coin::from_str(&record.amount[..])
-                .unwrap()
+                .unwrap(),
             valid_from: None,
         }],
         _ => vec![],
