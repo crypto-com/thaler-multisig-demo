@@ -25,7 +25,7 @@ pub struct Order {
     pub payment_transaction_id: String,
     pub settlement_transaction_id: String,
 }
-#[derive(Debug, Serialize, Deserialize, AsExpression, FromSqlRow)]
+#[derive(Debug, Serialize, Deserialize, AsExpression, FromSqlRow, PartialEq, Clone, Copy)]
 #[sql_type = "Text"]
 pub enum OrderStatus {
     PendingPayment,
@@ -138,6 +138,7 @@ pub struct ConfirmRequest {
 }
 #[derive(Serialize)]
 pub struct ConfirmResponse {
+    pub order_id: String,
     pub transaction_id: String,
 }
 #[derive(Deserialize)]

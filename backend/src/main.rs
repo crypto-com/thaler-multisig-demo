@@ -210,7 +210,14 @@ fn submit_payment_proof(
         })
         .and_then(move |_| db::execute_get_order_by_id(query_pool, query_order_id))
         .and_then(move |record| {
-            // TODO: Check status
+            if record.status != OrderStatus::PendingPayment {
+                return Err(AWError::from(
+                    HttpResponse::BadRequest()
+                        .reason("Transaction Not Pending for Payment")
+                        .finish(),
+                ));
+            }
+
             let transaction =
                 get_transaction_by_id(query_transaction_id, record.wallet_name.clone());
             let transaction = match transaction {
@@ -229,7 +236,7 @@ fn submit_payment_proof(
             } else {
                 Err(AWError::from(
                     HttpResponse::BadRequest()
-                        .reason("Invalid transaction type")
+                        .reason("Invalid Transaction Type")
                         .finish(),
                 ))
             }
@@ -242,7 +249,7 @@ fn submit_payment_proof(
             if tx.outputs.len() == 0 {
                 return Err(AWError::from(
                     HttpResponse::BadRequest()
-                        .reason("Transaction has no output")
+                        .reason("Transaction Has No Output")
                         .finish(),
                 ));
             }
@@ -270,14 +277,14 @@ fn submit_payment_proof(
             if tx.outputs[0].address.to_cro().unwrap() != multisig_address.to_string() {
                 return Err(AWError::from(
                     HttpResponse::BadRequest()
-                        .reason("Incorrect transaction output address")
+                        .reason("Incorrect Transaction Output Address")
                         .finish(),
                 ));
             }
             if tx.outputs[0].value != Coin::from_str(&record.amount).unwrap() {
                 return Err(AWError::from(
                     HttpResponse::BadRequest()
-                        .reason("Incorrect transaction output amount")
+                        .reason("Incorrect Transaction Output Amount")
                         .finish(),
                 ));
             }
@@ -317,6 +324,7 @@ fn get_order(
         })
         .and_then(move |_| db::execute_get_order_by_id(query_pool, query_order_id))
         .and_then(move |record| {
+            // Uncomment to return commitment and nonce in response
             // let (wallet, _, _) = make_app();
             // let passphrase = SecUtf8::from("passphrase");
 
@@ -435,8 +443,18 @@ fn exchange_commitment(
         })
         .and_then(move |_| db::execute_get_order_by_id(query_pool, query_order_id))
         .and_then(move |record| {
-            // TODO: Check status
+            if record.status != OrderStatus::Delivering && record.status != OrderStatus::Refunding {
+                return Err(AWError::from(
+                    HttpResponse::BadRequest()
+                        .reason("Transaction Not Ready")
+                        .finish(),
+                ));
+            }
             // TODO: Check order hasn't exchanged commitment before
+
+            Ok(record)
+        })
+        .and_then(move |record| {
             let wallet_name = record.wallet_name.clone();
 
             let merchant_public_key =
@@ -520,6 +538,7 @@ fn confirm(
     let passphrase = SecUtf8::from("passphrase");
 
     // TODO: Consider using Arc to share resource
+
     let query_order_id = params.order_id.to_string();
     let query_pool = pool.clone();
 
@@ -537,7 +556,30 @@ fn confirm(
         })
         .and_then(move |_| db::execute_get_order_by_id(query_pool, query_order_id))
         .and_then(move |record| {
-            // TODO: Check status
+            match status {
+                OrderStatus::Completed => {
+                    if record.status != OrderStatus::Delivering {
+                        return Err(AWError::from(
+                            HttpResponse::BadRequest()
+                                .reason("Refunding Transaction Cannot Confirm Delivery")
+                                .finish(),
+                        ));
+                    }
+                }
+                OrderStatus::Refunded => {
+                    if record.status != OrderStatus::Refunding {
+                        return Err(AWError::from(
+                            HttpResponse::BadRequest()
+                                .reason("Delivering Transaction Cannot Refund")
+                                .finish(),
+                        ));
+                    }
+                }
+                _ => {
+                    return Err(AWError::from(HttpResponse::InternalServerError().finish()));
+                }
+            }
+
             let wallet_name = record.wallet_name.clone();
 
             // Complete multi-sig session
@@ -609,6 +651,7 @@ fn confirm(
             db::execute_update_order_status(update_pool, update_order_id.clone(), status).and_then(
                 move |_| {
                     let res = ConfirmResponse {
+                        order_id: return_order_id,
                         transaction_id: record.settlement_transaction_id.to_string(),
                     };
                     Ok(HttpResponse::Ok().json(res))
