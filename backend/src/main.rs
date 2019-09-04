@@ -790,13 +790,13 @@ fn construct_tx(
                 address: merchant_address,
                 value: Coin::from_str(&record.amount[..])
                     .unwrap()
-                    .sub(Coin::from(10 * 10_000_000))
+                    .sub(Coin::from(10 * 1_0000_0000))
                     .unwrap(),
                 valid_from: None,
             },
             TxOut {
                 address: buyer_address,
-                value: Coin::from(10 * 10_000_000),
+                value: Coin::from(10 * 1_0000_0000),
                 valid_from: None,
             },
         ],
@@ -804,8 +804,6 @@ fn construct_tx(
             address: buyer_address,
             value: Coin::from_str(&record.amount[..])
                 .unwrap()
-                .add(Coin::from(10 * 10_000_000))
-                .unwrap(),
             valid_from: None,
         }],
         _ => vec![],
