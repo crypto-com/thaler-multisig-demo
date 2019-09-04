@@ -28,5 +28,5 @@ systemfd --no-pid -s http::8080 -- cargo watch -x run
 # if fedora : sudo dnf install sqlite3x
 sqlite3 multi-sig.db
 sqlite> .tables
-sqlite> select * from order_details;
+sqlite> select * from orders;
 ```

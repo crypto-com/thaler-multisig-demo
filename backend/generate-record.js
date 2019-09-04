@@ -1,17 +1,4 @@
-function makeRandomString(length) {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
-function makeRandomAmount() {
-  return Math.floor(Math.random() * 10000).toString();
-}
+const crypto = require("crypto");
 
 function makeRecord(size) {
   for (let i = 0; i < size; i += 1) {
@@ -70,6 +57,14 @@ function makeRecord(size) {
       `INSERT INTO orders VALUES('${i}','${type}','${wallet_name}','${amount}','${buyer_public_key}','${buyer_view_key}','${buyer_address}','${escrow_public_key}','${escrow_view_key}','${session_id}','${payment_transaction_id}','${settlement_transaction_id}');`
     );
   }
+}
+
+function makeRandomString(length) {
+  return crypto.randomBytes(length/2).toString("hex");
+}
+
+function makeRandomAmount() {
+  return Math.floor(Math.random() * 10000).toString();
 }
 
 makeRecord(50);
