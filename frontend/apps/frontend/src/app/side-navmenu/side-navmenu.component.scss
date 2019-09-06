@@ -1,0 +1,92 @@
+.container {
+  padding: 15px;
+  color: #fff;
+}
+
+.profile {
+  margin-bottom: 30px;
+
+  .avatar {
+    background-color: #fff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    text-align: center;
+    line-height: 30px;
+    color: #888;
+  }
+  .name {
+    margin-left: 10px;
+    font-size: 15px
+  }
+}
+
+.menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding: 5px 10px 5px 15px;
+    cursor: pointer !important;
+
+    .icon {
+      display: inline-block;
+    }
+
+    .text {
+      display: inline-block;
+      margin-left: 12px;
+      font-size: 15px;
+    }
+
+    .badge {
+      float: right;
+
+      .mat-chip {
+        font-size: 12px;
+        padding: 0 7px;
+        min-height: 20px;
+      }
+
+      .mat-chip.mat-standard-chip {
+        color: #fff;
+        background-color: #1199FA;
+      }
+    }
+  }
+
+  li.separator {
+    padding-bottom: 20px;
+  }
+
+  li:not(.separator):hover {
+    background-color: #344c6b;
+  }
+
+  li:not(.separator).selected {
+    background-color: #344c6b;
+  }
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  padding-right: 15px;
+
+  .logo {
+    margin-top: 30px;
+    margin-bottom: 35px;
+    padding: 0 10px;
+
+    img {
+      width: 100%;
+      max-width: 180px
+    }
+  }
+}

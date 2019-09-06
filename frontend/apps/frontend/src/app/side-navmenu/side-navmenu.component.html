@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="profile">
+    <div class="avatar">M</div>
+    <span class="name">Merchant</span>
+  </div>
+
+  <ul class="menu">
+    <li
+      routerLink="/dashboard"
+      [className]="currentRoutePath === '/dashboard' ? 'selected' : ''"
+    >
+      <div class="icon">
+        <fa name="tachometer"></fa>
+      </div>
+      <div class="text">Dashboard</div>
+    </li>
+    <li class="separator"></li>
+    <li
+      routerLink="/orders/outstanding"
+      [className]="
+        currentRoutePath.indexOf('/orders/') !== -1 ? 'selected' : ''
+      "
+    >
+      <div class="icon">
+        <fa name="tags"></fa>
+      </div>
+      <div class="text">Orders</div>
+      <div class="badge" *ngIf="outstandingOrderSize !== 0">
+        <mat-chip-list>
+          <mat-chip>&nbsp;<span>{{outstandingOrderSize}}</span>&nbsp;</mat-chip>
+        </mat-chip-list>
+      </div>
+    </li>
+    <li>
+      <div class="icon">
+        <fa name="at"></fa>
+      </div>
+      <div class="text">Escrow List</div>
+    </li>
+  </ul>
+
+  <div class="footer">
+    <ul class="menu">
+      <li>
+        <div class="icon">
+          <fa name="question-circle" inverse="true"></fa>
+        </div>
+        <div class="text">Support</div>
+      </li>
+    </ul>
+    <div class="logo">
+      <img src="/assets/crypto_logo_white.png" />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+<div class="container">
+  <nav mat-tab-nav-bar [backgroundColor]="background">
+    <a
+      mat-tab-link
+      routerLink="/orders/pending"
+      [active]="this.currentPath === '/orders/pending'"
+      >Pending</a
+    >
+    <a
+      mat-tab-link
+      routerLink="/orders/outstanding"
+      [active]="this.currentPath === '/orders/outstanding'"
+      >Outstanding</a
+    >
+    <a
+      mat-tab-link
+      routerLink="/orders/completed"
+      [active]="this.currentPath === '/orders/completed'"
+      >Completed</a
+    >
+  </nav>
+  <frontend-order-table [data]="data"></frontend-order-table>
+</div>

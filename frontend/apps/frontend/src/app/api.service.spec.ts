@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { EscrowMerchantService } from './escrow-merchant.service';
+import { ApiService } from './api.service';
 
 describe('EscrowMerchantService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: EscrowMerchantService = TestBed.get(EscrowMerchantService);
+    const service: ApiService = TestBed.get(ApiService);
     expect(service).toBeTruthy();
   });
 });

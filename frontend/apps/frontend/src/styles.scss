@@ -1,1 +1,92 @@
 /* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: acumin-pro, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  color: '#fff';
+  background-image: linear-gradient(#021e3f, #002a67);
+}
+
+ng2-smart-table {
+  font-weight: normal !important;
+
+  .ng2-smart-sort,
+  .ng2-smart-sort-link {
+    color: #888 !important;
+    text-transform: uppercase !important;
+    font-size: 12px !important;
+  }
+
+  .ng-star-inserted {
+    font-size: 14px;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: #efefef;
+  }
+
+  tbody td {
+    height: 45px;
+  }
+}
+
+.mat-tab-link,
+.mat-tab-label-content {
+  color: #1199fa !important;
+}
+
+.mat-ink-bar {
+  background-color: #1199fa !important;
+}
+
+.primary {
+  background-color: #007bff;
+}
+.secondary {
+  background-color: #6c757d;
+}
+.success {
+  background-color: #28a745;
+}
+.danger {
+  background-color: #dc3545;
+}
+.warning {
+  background-color: #ffc107;
+}
+.info {
+  background-color: #17a2b8;
+}
+
+ng2-smart-table-pager {
+  margin-top: 10px;
+  .ng2-smart-pagination {
+    .page-link,
+    .page-link-prev,
+    .page-link-next {
+      border: 0px;
+      background-color: rgba(73, 63, 63, 0);
+    }
+    .page-link-prev,
+    .page-link-next {
+      padding-top: 11px;
+      padding-bottom: 10px;
+    }
+    .page-item.active .page-link {
+      background-color: #1199fa;
+      border-color: #1199fa;
+      border-radius: 15px;
+      font-family: Helvetica;
+      font-size: 12px;
+      color: #ffffff;
+      width: 30px;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+a {
+    display: inline-block;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #1199fa !important;
+}
+
+a:hover, a:visited {
+    color: #1199fa !important;
+}
