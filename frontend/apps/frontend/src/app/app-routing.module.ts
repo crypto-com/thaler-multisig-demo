@@ -21,7 +21,7 @@ const routes: Routes = [
     path: 'orders/completed',
     component: OrdersComponent
   },
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
+  { path: '', redirectTo: '/orders/pending', pathMatch: 'full' }
 ];
 
 @NgModule({

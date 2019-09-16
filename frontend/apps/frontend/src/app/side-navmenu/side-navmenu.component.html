@@ -5,7 +5,7 @@
   </div>
 
   <ul class="menu">
-    <li
+    <!-- <li
       routerLink="/dashboard"
       [className]="currentRoutePath === '/dashboard' ? 'selected' : ''"
     >
@@ -14,7 +14,7 @@
       </div>
       <div class="text">Dashboard</div>
     </li>
-    <li class="separator"></li>
+    <li class="separator"></li> -->
     <li
       routerLink="/orders/outstanding"
       [className]="
@@ -27,16 +27,19 @@
       <div class="text">Orders</div>
       <div class="badge" *ngIf="outstandingOrderSize !== 0">
         <mat-chip-list>
-          <mat-chip>&nbsp;<span>{{outstandingOrderSize}}</span>&nbsp;</mat-chip>
+          <mat-chip
+            >&nbsp;<span>{{ outstandingOrderSize }}</span
+            >&nbsp;</mat-chip
+          >
         </mat-chip-list>
       </div>
     </li>
-    <li>
+    <!-- <li>
       <div class="icon">
         <fa name="at"></fa>
       </div>
       <div class="text">Escrow List</div>
-    </li>
+    </li> -->
   </ul>
 
   <div class="footer">
