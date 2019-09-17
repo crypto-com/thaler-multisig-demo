@@ -44,8 +44,8 @@ mod db;
 mod models;
 mod schema;
 
-const NETWORK_ID: &str = "AB";
-const TENDERMINT_URL: &str = "http://localhost:16657";
+const NETWORK_ID: &str = "42";
+const TENDERMINT_URL: &str = "http://localhost:26657";
 
 fn main() {
     let mut listenfd = ListenFd::from_env();

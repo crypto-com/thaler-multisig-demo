@@ -5,6 +5,7 @@ This project is under heavy development and for demo purpose only, please don't 
 ## Task lists: 
 - [X] Merchant panel
 - [ ] Escrow panel
+- [ ] Fee
 
 
 ## Build
@@ -12,6 +13,14 @@ This project is under heavy development and for demo purpose only, please don't 
 ### Build Prerequisites
 - Crypto.com Chain - sample-chain-wallet: https://github.com/crypto-com/sample-chain-wallet/tree/multi-sig-demo
   <br> (To enable multi-sig feature, please change branch to `multi-sig-demo` on sample-chain-wallet)
+- Enable zero fee Crypto.com Chain
+  <br> Current version only support 0 fee enviornment on . 
+  <br> To enable zero fee please update below fields in `.tendermint/config/genesis.json`
+  ```
+  "initial_fee_policy": {
+    "base_fee": "0.0",
+    "per_byte_fee": "0.0"
+  }
 ### Build instructions
 - #### Multi-sig web backend
 ```bash
