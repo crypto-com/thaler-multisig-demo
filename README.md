@@ -117,12 +117,12 @@ In case of the _merchant_ neither agree with the refund claim nor respond to _cu
 
 #### Transaction Flows:
 
-<div class = "design_diagra\m">
-    <img src="./PoGSD_1.png" alt="Transaction_Flows_1" />
+<div>
+    <img src="images/PoGSD_1.png" alt="Transaction_Flows_1" />
 </div>
 
-<div class = "design_diagra\m">
-    <img src="./PoGSD_2.png" alt="Transaction_Flows_2" />
+<div>
+    <img src="images/PoGSD_2.png" alt="Transaction_Flows_2" />
 </div>
 
 ## License
