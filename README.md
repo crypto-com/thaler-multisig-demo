@@ -40,7 +40,7 @@ This demo is to demonstrate a 2-of-3 [multisignature scheme](https://en.bitcoin.
 - Install [Diesel](https://diesel.rs/guides/getting-started/)
 
   ```bash
-  $ cargo install diesel_cli
+  $ cargo install diesel_cli --no-default-features --features sqlite
   ```
 
 ### Build instructions
@@ -49,7 +49,6 @@ This demo is to demonstrate a 2-of-3 [multisignature scheme](https://en.bitcoin.
 
 ```bash
 $ cd backend
-$ cargo install diesel_cli --no-default-features --features sqlite
 $ diesel setup
 $ cargo run
 ```
@@ -71,7 +70,7 @@ $ sudo dnf install libsqlite3x-devel
 ```bash
 $ cd frontend
 $ npm install
-$ ng serve --port 4201
+$ npm run start --port 4201
 ```
 
 Once the backend and the frontend are running, you can navigate to http://localhost:4201/ and interact with the web interface.
