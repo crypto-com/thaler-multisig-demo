@@ -70,7 +70,7 @@ $ sudo dnf install libsqlite3x-devel
 ```bash
 $ cd frontend
 $ npm install
-$ npm run start --port 4201
+$ npm run start -- --port 4201
 ```
 
 Once the backend and the frontend are running, you can navigate to http://localhost:4201/ and interact with the web interface.
