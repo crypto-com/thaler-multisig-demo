@@ -73,7 +73,7 @@ $ npm install
 $ npm run start -- --port 4201
 ```
 
-Once the backend and the frontend are running, you can navigate to http://localhost:4201/ and interact with the web interface.
+Once the backend and the frontend are running, you can navigate to http://localhost:4201/ and interact with the web interface. See also the [graphical instruction](https://github.com/crypto-com/multisig-demo/tree/master/frontend) for PoGSD demo frontend
 
 ## Use case example
 
