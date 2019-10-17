@@ -1,84 +1,33 @@
-# Frontend
+# PoGSD building instructions
 
-This project was generated using [Nx](https://nx.dev).
+## Customer side
 
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" width="450"></p>
+- Please follow the [build instructions](https://github.com/crypto-com/multisig-demo#build-prerequisites) to set up the sample wallet and the merchant frontend. You will need to begin with the branch ``multi-sig-demo`` on the [sample wallet.](https://github.com/crypto-com/sample-chain-wallet/tree/multi-sig-demo)
+Afterwards, you will find the "Pay" option on the top right corner as follows:
+<div>
+    <img src="../images/Workflow_1.png" alt="Transaction_Flows_1" />
+</div>
 
-🔎 **Nx is a set of Extensible Dev Tools for Monorepos.**
+- Fill in the *order id* and *amount*; Choose the *Merchant* that you would like to pay and your perferred *Escrow service* provider.
+<div>
+    <img src="../images/Workflow_2.png" alt="Transaction_Flows_1" />
+</div>
 
-## Quick Start & Documentation
+- Confirm the detail and press "Send" to proceed. 
 
-[Nx Documentation](https://nx.dev/angular)
+<div>
+    <img src="../images/Workflow_3.png" alt="Transaction_Flows_1" />
+</div>
 
-[10-minute video showing all Nx features](https://nx.dev/angular/getting-started/what-is-nx)
+- Once the transaction was successfully broadcasted, you will be able to see the order in the *Outstanding transactions* list. You can contact the escrow service by clicking *"Involve Escrow"* for resolving a payment dispute.
+ 
+<div>
+    <img src="../images/Workflow_4.png" alt="Transaction_Flows_1" />
+</div>
 
-[Interactive Tutorial](https://nx.dev/angular/tutorial/01-create-application)
+## Merchant side 
 
-## Adding capabilities to your workspace
-
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
-
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
-
-Below are some plugins which you can add to your workspace:
-
-- [Angular](https://angular.io)
-  - `ng add @nrwl/angular`
-- [React](https://reactjs.org)
-  - `ng add @nrwl/react`
-- Web (no framework frontends)
-  - `ng add @nrwl/web`
-- [Nest](https://nestjs.com)
-  - `ng add @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `ng add @nrwl/express`
-- [Node](https://nodejs.org)
-  - `ng add @nrwl/node`
-
-## Generate an application
-
-Run `ng g @nrwl/angular:app my-app` to generate an application.
-
-> You can use any of the plugins above to generate applications as well.
-
-When using Nx, you can create multiple applications and libraries in the same workspace.
-
-## Generate a library
-
-Run `ng g @nrwl/angular:lib my-lib` to generate a library.
-
-> You can also use any of the plugins above to generate libraries as well.
-
-Libraries are sharable across libraries and applications. They can be imported from `@frontend/mylib`.
-
-## Development server
-
-Run `ng serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng g component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `ng build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx dep-graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev/angular) to learn more.
+- On the other hand, merchant can choose to mark the order as *"[Delivered](https://github.com/crypto-com/multisig-demo#scenario-a-the-item-is-shipped)"* or *"[Refund](https://github.com/crypto-com/multisig-demo#b1-reimbursement-without-escrow)"* the customer.
+<div>
+    <img src="../images/Workflow_5.png" alt="Transaction_Flows_1" />
+</div>
