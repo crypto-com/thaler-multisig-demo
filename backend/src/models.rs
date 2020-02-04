@@ -98,8 +98,15 @@ pub struct OrderRequest {
     pub order_id: String,
 }
 #[derive(Serialize)]
+pub struct OrderPaidResponse {
+    pub order_id: String,
+}
+#[derive(Serialize)]
 pub struct OrderUpdatedResponse {
     pub order_id: String,
+    pub status: OrderStatus,
+    pub settlement_transaction_id: String,
+    pub settlement_transaction: Tx,
 }
 #[derive(Serialize)]
 pub struct OrderResponse {
