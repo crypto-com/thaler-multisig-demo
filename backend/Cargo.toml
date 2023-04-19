@@ -7,17 +7,16 @@ edition = "2018"
 [dependencies]
 actix-web = "1.0.7"
 actix-cors = "0.1.0"
-chain-core = { git = "https://github.com/crypto-com/chain.git", tag = "v0.0.3" }
-chain-tx-validation = { git = "https://github.com/crypto-com/chain.git", tag = "v0.0.3" }
-client-core = { git = "https://github.com/crypto-com/chain.git", tag = "v0.0.3" }
-client-common = { git = "https://github.com/crypto-com/chain.git", tag = "v0.0.3" }
-client-index = { git = "https://github.com/crypto-com/chain.git", tag = "v0.0.3" }
+chain-core = { git = "https://github.com/crypto-com/chain.git", tag = "v0.2.1" }
+client-core = { git = "https://github.com/crypto-com/chain.git", tag = "v0.2.1" }
+client-common = { git = "https://github.com/crypto-com/chain.git", tag = "v0.2.1" }
 diesel = { version = "1.4.2", features = ["sqlite","r2d2"] }
 dotenv = "0.9.0"
 env_logger = "0.5"
 failure = "0.1.1"
 futures = "0.1.29"
 hex = "0.3"
+lazy_static = "1.4.0"
 r2d2 = "0.8.2"
 r2d2_sqlite = "0.8.0"
 rusqlite = "0.16"

@@ -1,0 +1,865 @@
+{
+	"info": {
+		"_postman_id": "53fa5b10-8321-4d7c-bef2-80348006ff38",
+		"name": "MultiSig Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "[Customer/Escrow] wallet_create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"method\": \"wallet_create\",\n\t\"jsonrpc\": \"2.0\",\n\t\"params\": [{\n\t\t\"name\": \"{{wallet_name}}\",\n\t\t\"passphrase\": \"{{wallet_passphrase}}\"\n\t}],\n\t\"id\": \"wallet_create\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer/Escrow] wallet_restore",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"wallet_restore\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n        {\n            \"name\": \"{{wallet_name}}\",\n            \"passphrase\": \"{{wallet_passphrase}}\"\n        },\n        \"ordinary mandate edit father snack mesh history identify print borrow skate unhappy cattle tiny first\"\n    ],\n    \"id\": \"wallet_restore\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer/Escrow] wallet_getEncKey",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"wallet_getEncKey\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n        {\n            \"name\": \"{{wallet_name}}\",\n            \"passphrase\": \"{{wallet_passphrase}}\"\n        }\n    ],\n    \"id\": \"wallet_getEncKey\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer/Escrow] wallet_newMultiSigAddressPublicKey",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"method\": \"wallet_newMultiSigAddressPublicKey\",\n\t\"jsonrpc\": \"2.0\",\n\t\"params\": [\n\t\t{\n\t\t\t\"name\": \"{{wallet_name}}\",\n\t\t\t\"enckey\": \"{{wallet_enckey}}\"\n\t\t}\n\t],\n\t\"id\": \"wallet_newMultiSigAddressPublicKey\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer/Escrow] multiSig_newAddressPublicKey",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"multiSig_newAddressPublicKey\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n        {\n            \"name\": \"{{wallet_name}}\",\n            \"enckey\": \"{{wallet_enckey}}\"\n        }\n    ],\n    \"id\": \"multiSig_newAddressPublicKey\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer/Escrow] multiSig_listAddressPublicKeys",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"multiSig_listAddressPublicKeys\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n        {\n            \"name\": \"{{wallet_name}}\",\n            \"enckey\": \"{{wallet_enckey}}\"\n        }\n    ],\n    \"id\": \"multiSig_listAddressPublicKeys\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer/Escrow] wallet_getViewKey",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"wallet_getViewKey\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n        {\n            \"name\": \"{{wallet_name}}\",\n            \"enckey\": \"{{wallet_enckey}}\"\n        },\n        false\n    ],\n    \"id\": \"wallet_getViewKey\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] wallet_createTransferAddress",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"method\": \"wallet_createTransferAddress\",\n\t\"jsonrpc\": \"2.0\",\n\t\"params\": [{\n\t\t\"name\": \"{{wallet_name}}\",\n\t\t\"enckey\": \"{{wallet_enckey}}\"\n\t}],\n\t\"id\": \"wallet_createTransferAddress\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Merchant] /order/new",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "order_id",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "1050000000",
+							"type": "text"
+						},
+						{
+							"key": "buyer_public_key",
+							"value": "{{public_key}}",
+							"type": "text"
+						},
+						{
+							"key": "buyer_view_key",
+							"value": "{{view_key}}",
+							"type": "text"
+						},
+						{
+							"key": "buyer_address",
+							"value": "{{transfer_address}}",
+							"type": "text"
+						},
+						{
+							"key": "escrow_public_key",
+							"value": "{{escrow_public_key}}",
+							"type": "text"
+						},
+						{
+							"key": "escrow_view_key",
+							"value": "{{escrow_view_key}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/order/new",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] wallet_sendToAddress",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"wallet_sendToAddress\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n        {\n            \"name\": \"{{wallet_name}}\",\n            \"enckey\": \"{{wallet_enckey}}\"\n        },\n        \"{{multisig_address}}\",\n        \"1050000000\",\n        [\n            \"{{merchant_view_key}}\",\n            \"{{escrow_view_key}}\"\n        ]\n    ],\n    \"id\": \"wallet_sendToAddress\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] /order/payment-proof",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "order_id",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "transaction_id",
+							"value": "{{multisig_utxo_transaction_id}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/order/payment-proof",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"payment-proof"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Merchant] /order/delivering",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "order_id",
+							"value": "100",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/order/delivering",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"delivering"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Merchant] /order/refunding",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "order_id",
+							"value": "100",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/order/refunding",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"refunding"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] multiSig_newSession",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"multiSig_newSession\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n        {\n            \"name\": \"{{wallet_name}}\",\n            \"enckey\": \"{{wallet_enckey}}\"\n        },\n        \"{{settlement_transaction_id}}\",\n        [\n        \t\"{{merchant_public_key}}\",\n            \"{{public_key}}\"\n        ],\n        \"{{public_key}}\"\n    ],\n    \"id\": \"multiSig_newSession\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] multiSig_nonceCommitment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"multiSig_nonceCommitment\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n    \t\"{{session_id}}\",\n        \"{{wallet_enckey}}\"\n    ],\n    \"id\": \"multiSig_nonceCommitment\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] /order/exchange-commitment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "order_id",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "commitment",
+							"value": "4023b5a3260d739b49ae3dab67dcf7e8165564d81e6d72b32e6d6f9d3d8ce97b",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/order/exchange-commitment",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"exchange-commitment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] multiSig_addNonceCommitment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"multiSig_addNonceCommitment\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n    \t\"{{session_id}}\",\n        \"{{wallet_enckey}}\",\n        \"b7a7d318fe96cb5199e1f90b9d1bf63f92c7cacdf08437b4e5e954f11213d5dd\",\n        \"{{merchant_public_key}}\"\n    ],\n    \"id\": \"multiSig_addNonceCommitment\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] multiSig_addNonce",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"multiSig_addNonce\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n    \t\"{{session_id}}\",\n        \"{{wallet_enckey}}\",\n        \"02ee3ffa95d1e8e9dbda8794393768bfba805e7485b05bbf85f7323fa5a6bd2741\",\n        \"{{merchant_public_key}}\"\n    ],\n    \"id\": \"multiSig_addNonce\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] multiSig_nonce",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"multiSig_nonce\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n    \t\"{{session_id}}\",\n        \"{{wallet_enckey}}\"\n    ],\n    \"id\": \"multiSig_nonce\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] multiSig_partialSign",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"method\": \"multiSig_partialSign\",\n    \"jsonrpc\": \"2.0\",\n    \"params\": [\n    \t\"{{session_id}}\",\n        \"{{wallet_enckey}}\"\n    ],\n    \"id\": \"multiSig_partialSign\"\n}"
+				},
+				"url": {
+					"raw": "http://{{client_rpc_host}}:{{client_rpc_port}}/",
+					"protocol": "http",
+					"host": [
+						"{{client_rpc_host}}"
+					],
+					"port": "{{client_rpc_port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] /order/confirm/delivery",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "order_id",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "nonce",
+							"value": "043262d2c61ffd7f25b97fbde0e37bb11adeb7ddc6729d57f1fcd06782d951ad3a486f0f4be887e0ea662be3e3132cf20a52dca32393cee95de958fb006a6fe83f",
+							"type": "text"
+						},
+						{
+							"key": "partial_signature",
+							"value": "3545a3bc4317f45bd73e475d0ed836e418641bdd99594883c5989e3d76f34da5",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/order/confirm/delivery",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"confirm",
+						"delivery"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Customer] /order/confirm/refund",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "order_id",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "nonce",
+							"value": "0405ff4fa9c2f3d6231197e29b7679084b1c3704e4fe67979868a7c681d0cbf88bdaaf974bba8f9e3e9c7f3cde7c05dac09657874f3fc1b5a0a7577c6e989a4081",
+							"type": "text"
+						},
+						{
+							"key": "partial_signature",
+							"value": "233394bc283aeddf89e8b9efb7116864b7b51495e10771ae4ad5805ad016fe66",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/order/confirm/refund",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"confirm",
+						"refund"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/order",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8080/order?order_id=100",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order"
+					],
+					"query": [
+						{
+							"key": "order_id",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/order/pending",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8080/order/pending",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"pending"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/order/in-escrow",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8080/order/in-escrow",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"in-escrow"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
